@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>读书笔记-linux load查看与分析 | Lighthouse</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="读书笔记 - 《大型分布式网站架构设计与实践》
+LOAD
+定义:  特定时间间隔内运行队列中的平均数，       一个线程如果满足下面三个条件，就会处于运行队列中。
+
+没有处于IO等待状态
+没有主动进入等待状态（wait）
+没有被终止。
+
+举例说明：8核cpu 运行16根线程，如果线程平均分配，每个cpu运行队列中有两个线程在运行，如果此状态持续一分钟，那么这一分钟内系统的load值就是2.
+判">
+<meta property="og:type" content="article">
+<meta property="og:title" content="读书笔记-linux load查看与分析">
+<meta property="og:url" content="http://hongkaiwen.github.io/2016/03/05/读书笔记-linux-load查看与分析/index.html">
+<meta property="og:site_name" content="Lighthouse">
+<meta property="og:description" content="读书笔记 - 《大型分布式网站架构设计与实践》
+LOAD
+定义:  特定时间间隔内运行队列中的平均数，       一个线程如果满足下面三个条件，就会处于运行队列中。
+
+没有处于IO等待状态
+没有主动进入等待状态（wait）
+没有被终止。
+
+举例说明：8核cpu 运行16根线程，如果线程平均分配，每个cpu运行队列中有两个线程在运行，如果此状态持续一分钟，那么这一分钟内系统的load值就是2.
+判">
+<meta property="og:updated_time" content="2016-03-05T09:29:53.551Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="读书笔记-linux load查看与分析">
+<meta name="twitter:description" content="读书笔记 - 《大型分布式网站架构设计与实践》
+LOAD
+定义:  特定时间间隔内运行队列中的平均数，       一个线程如果满足下面三个条件，就会处于运行队列中。
+
+没有处于IO等待状态
+没有主动进入等待状态（wait）
+没有被终止。
+
+举例说明：8核cpu 运行16根线程，如果线程平均分配，每个cpu运行队列中有两个线程在运行，如果此状态持续一分钟，那么这一分钟内系统的load值就是2.
+判">
+  
+    <link rel="alternate" href="/atom.xml" title="Lighthouse" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Lighthouse</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">an blog about IT technology</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://hongkaiwen.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-读书笔记-linux-load查看与分析" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/03/05/读书笔记-linux-load查看与分析/" class="article-date">
+  <time datetime="2016-03-05T09:23:41.000Z" itemprop="datePublished">2016-03-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      读书笔记-linux load查看与分析
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>读书笔记 - 《大型分布式网站架构设计与实践》</p>
+<p><strong>LOAD</strong></p>
+<p>定义:  特定时间间隔内运行队列中的平均数，       一个线程如果满足下面三个条件，就会处于运行队列中。</p>
+<ul>
+<li>没有处于IO等待状态</li>
+<li>没有主动进入等待状态（wait）</li>
+<li>没有被终止。</li>
+</ul>
+<p>举例说明：8核cpu 运行16根线程，如果线程平均分配，每个cpu运行队列中有两个线程在运行，如果此状态持续一分钟，那么这一分钟内系统的load值就是2.</p>
+<p>判断条件：如果load不大于3，系统负载正常；大于5则负载过高。</p>
+<p>查看方法：uptime\top\dstat</p>
+<h3 id="uptime"><a href="#uptime" class="headerlink" title="uptime"></a>uptime</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@xxx ~]<span class="comment"># uptime</span></span><br><span class="line"> 17:27:03 up  1:02,  2 users,  load average: 0.00, 0.03, 0.05</span><br></pre></td></tr></table></figure>
+<h3 id="top"><a href="#top" class="headerlink" title="top"></a>top</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@xxx ~]<span class="comment"># top</span></span><br><span class="line">top - 17:27:28 up  1:03,  2 users,  load average: 0.25, 0.09, 0.06</span><br><span class="line">Tasks: 114 total,   2 running, 112 sleeping,   0 stopped,   0 zombie</span><br></pre></td></tr></table></figure>
+<h3 id="dstat"><a href="#dstat" class="headerlink" title="dstat"></a>dstat</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@xxx ~]<span class="comment"># dstat -l</span></span><br><span class="line">---load-avg---</span><br><span class="line"> 1m   5m  15m</span><br><span class="line">0.15 0.08 0.06</span><br><span class="line">0.15 0.08 0.06</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://hongkaiwen.github.io/2016/03/05/读书笔记-linux-load查看与分析/" data-id="ciq4d1bfw0002isr3wuj8j1pm" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/读书笔记/">读书笔记</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/04/28/mongo-正则查询特殊字符转义/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          mongo 正则查询特殊字符转义
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/03/01/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Hello World</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+  <section id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="post-读书笔记-linux-load查看与分析" data-title="读书笔记-linux load查看与分析" data-url="http://hongkaiwen.github.io/2016/03/05/读书笔记-linux-load查看与分析/"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:'hongkaiwen'};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    <!-- 多说公共JS代码 end -->
+  </section>
+  </section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea-golang-plugin-webstorm-JetBrains/">idea,golang,plugin,webstorm,JetBrains</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/读书笔记/">读书笔记</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/idea-golang-plugin-webstorm-JetBrains/" style="font-size: 10px;">idea,golang,plugin,webstorm,JetBrains</a> <a href="/tags/读书笔记/" style="font-size: 10px;">读书笔记</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/07/02/idea-webstorm-安装golang插件/">idea/webstorm 安装golang插件</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/28/mongo-正则查询特殊字符转义/">mongo 正则查询特殊字符转义</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/05/读书笔记-linux-load查看与分析/">读书笔记-linux load查看与分析</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/01/hello-world/">Hello World</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
