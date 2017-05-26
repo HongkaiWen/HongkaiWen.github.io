@@ -6,17 +6,33 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://hongkaiwen.github.io">
-  <title>Archives: 2016/4 | Kuzan</title>
+  <title>java 并发死锁产生原因与诊断 | Kuzan</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="blog or something else">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Kuzan">
-<meta property="og:url" content="http://hongkaiwen.github.io/archives/2016/04/index.html">
+  <meta name="description" content="死锁的产生原因
+并发死锁产生的原因一般是由于加锁顺序不一致引起的，假设一个事物需要获得连续获得两个资源的锁，如果执行事物的两个线程获得这两个锁的顺序不一致，就有可能产生死锁。
+下面是我画的一个简单的说明图：
+在Dead lock point， 第一个线程拥有A锁，想获得B锁， 第二个线程拥有B锁，想获得A锁，两个线程相互拥有另一个线程所等待的资源。造成这种局面的原因就是两个线程加锁的顺序不一样，一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java 并发死锁产生原因与诊断">
+<meta property="og:url" content="http://hongkaiwen.github.io/2017/05/26/java-并发死锁产生原因与诊断/index.html">
 <meta property="og:site_name" content="Kuzan">
-<meta property="og:description" content="blog or something else">
+<meta property="og:description" content="死锁的产生原因
+并发死锁产生的原因一般是由于加锁顺序不一致引起的，假设一个事物需要获得连续获得两个资源的锁，如果执行事物的两个线程获得这两个锁的顺序不一致，就有可能产生死锁。
+下面是我画的一个简单的说明图：
+在Dead lock point， 第一个线程拥有A锁，想获得B锁， 第二个线程拥有B锁，想获得A锁，两个线程相互拥有另一个线程所等待的资源。造成这种局面的原因就是两个线程加锁的顺序不一样，一">
+<meta property="og:image" content="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/java%20%E5%B9%B6%E5%8F%91%E6%AD%BB%E9%94%81%E4%BA%A7%E7%94%9F%E5%8E%9F%E5%9B%A0%E4%B8%8E%E8%AF%8A%E6%96%AD/image1.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/java%20%E5%B9%B6%E5%8F%91%E6%AD%BB%E9%94%81%E4%BA%A7%E7%94%9F%E5%8E%9F%E5%9B%A0%E4%B8%8E%E8%AF%8A%E6%96%AD/image2.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/java%20%E5%B9%B6%E5%8F%91%E6%AD%BB%E9%94%81%E4%BA%A7%E7%94%9F%E5%8E%9F%E5%9B%A0%E4%B8%8E%E8%AF%8A%E6%96%AD/image3.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/java%20%E5%B9%B6%E5%8F%91%E6%AD%BB%E9%94%81%E4%BA%A7%E7%94%9F%E5%8E%9F%E5%9B%A0%E4%B8%8E%E8%AF%8A%E6%96%AD/image4.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/java%20%E5%B9%B6%E5%8F%91%E6%AD%BB%E9%94%81%E4%BA%A7%E7%94%9F%E5%8E%9F%E5%9B%A0%E4%B8%8E%E8%AF%8A%E6%96%AD/image5.png">
+<meta property="og:updated_time" content="2017-05-26T15:17:10.329Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Kuzan">
-<meta name="twitter:description" content="blog or something else">
+<meta name="twitter:title" content="java 并发死锁产生原因与诊断">
+<meta name="twitter:description" content="死锁的产生原因
+并发死锁产生的原因一般是由于加锁顺序不一致引起的，假设一个事物需要获得连续获得两个资源的锁，如果执行事物的两个线程获得这两个锁的顺序不一致，就有可能产生死锁。
+下面是我画的一个简单的说明图：
+在Dead lock point， 第一个线程拥有A锁，想获得B锁， 第二个线程拥有B锁，想获得A锁，两个线程相互拥有另一个线程所等待的资源。造成这种局面的原因就是两个线程加锁的顺序不一样，一">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/java%20%E5%B9%B6%E5%8F%91%E6%AD%BB%E9%94%81%E4%BA%A7%E7%94%9F%E5%8E%9F%E5%9B%A0%E4%B8%8E%E8%AF%8A%E6%96%AD/image1.png">
   
     <link rel="alternative" href="/atom.xml" title="Kuzan" type="application/atom+xml">
   
@@ -142,49 +158,188 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-java-并发死锁产生原因与诊断" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2016" class="archive-year">2016</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2016/04/28/mongo-正则查询特殊字符转义/" class="archive-article-date">
-  	<time datetime="2016-04-28T04:46:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2016-04-28</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/04/28/mongo-正则查询特殊字符转义/">mongo 正则查询特殊字符转义</a>
+    <h1 class="article-title" itemprop="name">
+      java 并发死锁产生原因与诊断
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
+        
+        <a href="/2017/05/26/java-并发死锁产生原因与诊断/" class="archive-article-date">
+  	<time datetime="2017-05-26T14:53:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-05-26</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><strong>死锁的产生原因</strong></p>
+<p>并发死锁产生的原因一般是由于加锁顺序不一致引起的，假设一个事物需要获得连续获得两个资源的锁，如果执行事物的两个线程获得这两个锁的顺序不一致，就有可能产生死锁。</p>
+<p>下面是我画的一个简单的说明图：<br><img src="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/java%20%E5%B9%B6%E5%8F%91%E6%AD%BB%E9%94%81%E4%BA%A7%E7%94%9F%E5%8E%9F%E5%9B%A0%E4%B8%8E%E8%AF%8A%E6%96%AD/image1.png" alt="enter description here"></p>
+<p>在Dead lock point， 第一个线程拥有A锁，想获得B锁， 第二个线程拥有B锁，想获得A锁，两个线程相互拥有另一个线程所等待的资源。<br>造成这种局面的原因就是两个线程加锁的顺序不一样，一旦程序中产生死锁，唯一能做的就是杀死进程，重启应用。</p>
+<p><strong>用java代码实现死锁</strong></p>
+<p>运行以下代码，程序会一直运行，不退出。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestDeadLock</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Lock lockA = <span class="keyword">new</span> ReentrantLock();  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Lock lockB = <span class="keyword">new</span> ReentrantLock();  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span></span>&#123;  </span><br><span class="line">        <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;  </span><br><span class="line">            <span class="meta">@Override</span>  </span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">                <span class="keyword">try</span>&#123;  </span><br><span class="line">                    lockA.lock();  </span><br><span class="line">                    TimeUnit.SECONDS.sleep(<span class="number">2</span>);  </span><br><span class="line">                    <span class="keyword">try</span>&#123;  </span><br><span class="line">                        lockB.lock();  </span><br><span class="line">                    &#125;<span class="keyword">finally</span> &#123;  </span><br><span class="line">                        lockB.unlock();  </span><br><span class="line">                    &#125;  </span><br><span class="line">                &#125;<span class="keyword">catch</span> (InterruptedException e) &#123;  </span><br><span class="line">  </span><br><span class="line">                &#125;<span class="keyword">finally</span> &#123;  </span><br><span class="line">                    lockA.unlock();  </span><br><span class="line">                &#125;  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;).start();  </span><br><span class="line">        <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;  </span><br><span class="line">            <span class="meta">@Override</span>  </span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">                <span class="keyword">try</span>&#123;  </span><br><span class="line">                    lockB.lock();  </span><br><span class="line">                    TimeUnit.SECONDS.sleep(<span class="number">2</span>);  </span><br><span class="line">                    <span class="keyword">try</span>&#123;  </span><br><span class="line">                        lockA.lock();  </span><br><span class="line">                    &#125;<span class="keyword">finally</span> &#123;  </span><br><span class="line">                        lockA.unlock();  </span><br><span class="line">                    &#125;  </span><br><span class="line">                &#125;<span class="keyword">catch</span> (InterruptedException e) &#123;  </span><br><span class="line">  </span><br><span class="line">                &#125;<span class="keyword">finally</span> &#123;  </span><br><span class="line">                    lockB.unlock();  </span><br><span class="line">                &#125;  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;).start();  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p> 代码链接： <a href="https://github.com/HongkaiWen/study/blob/master/src/main/java/concurrent/deadlock/TestDeadLock.java" target="_blank" rel="external">https://github.com/HongkaiWen/study/blob/master/src/main/java/concurrent/deadlock/TestDeadLock.java</a></p>
+<p><strong>程序产生死锁后的排查</strong></p>
+<p>产生死锁的现象就是程序停在那里，不会对调用者产生反馈。以我上边写的例子来说，就是程序无法退出。<br>下面以我这个例子来说明如何确定程序是因为死锁才停在那里。（这个程序是我故意写的死锁，一般的应用中是没有人会故意写死锁的，所以程序发生阻塞时，需要定位问题的原因）</p>
+<p><strong>windows平台：</strong></p>
+<p>我在我本机windows平台下运行我的死锁程序， 程序停在那里不动。<br>这时我打开jvisualvm.exe （jdk的bin目录下），这是一个图形界面程序，截图如下：</p>
+<p><img src="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/java%20%E5%B9%B6%E5%8F%91%E6%AD%BB%E9%94%81%E4%BA%A7%E7%94%9F%E5%8E%9F%E5%9B%A0%E4%B8%8E%E8%AF%8A%E6%96%AD/image2.png" alt="enter description here"></p>
+<p>关于此界面的说明：<br>首先左侧是一个JVM的进程列表，在列表中我可以找到我的应用的进程，单击目标进程即可查看进程详细信息。<br>右边很明显了，红色字体提示检测到死锁，点击线程Dump就可以查看进一步的详细信息了。<br>下面是一条一条的时间线是所有线程的状态了，Thread-1 和 Thread-2是我们的用户线程，黄色代表等待状态。</p>
+<p>下面是线程dump的信息，信息比较多，我贴出关键部分：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Found one Java-level deadlock:  </span><br><span class="line">=============================  </span><br><span class="line">&quot;Thread-1&quot;:  </span><br><span class="line">  waiting for ownable synchronizer 0x09df1d10, (a java.util.concurrent.locks.ReentrantLock$NonfairSync),  </span><br><span class="line">  which is held by &quot;Thread-0&quot;  </span><br><span class="line">&quot;Thread-0&quot;:  </span><br><span class="line">  waiting for ownable synchronizer 0x09df1ef8, (a java.util.concurrent.locks.ReentrantLock$NonfairSync),  </span><br><span class="line">  which is held by &quot;Thread-1&quot;</span><br></pre></td></tr></table></figure>
+<p>意思就是线程1等待线程2持有的资源，线程2等待线程1持有的资源，再下面的信息可以定位到具体代码的哪一行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&quot;Thread-1&quot;:  </span><br><span class="line">    at sun.misc.Unsafe.park(Native Method)  </span><br><span class="line">    - parking to wait for  &lt;0x09df1d10&gt; (a java.util.concurrent.locks.ReentrantLock$NonfairSync)  </span><br><span class="line">    at java.util.concurrent.locks.LockSupport.park(LockSupport.java:175)  </span><br><span class="line">    at java.util.concurrent.locks.AbstractQueuedSynchronizer.parkAndCheckInterrupt(AbstractQueuedSynchronizer.java:836)  </span><br><span class="line">    at java.util.concurrent.locks.AbstractQueuedSynchronizer.acquireQueued(AbstractQueuedSynchronizer.java:870)  </span><br><span class="line">    at java.util.concurrent.locks.AbstractQueuedSynchronizer.acquire(AbstractQueuedSynchronizer.java:1199)  </span><br><span class="line">    at java.util.concurrent.locks.ReentrantLock$NonfairSync.lock(ReentrantLock.java:209)  </span><br><span class="line">    at java.util.concurrent.locks.ReentrantLock.lock(ReentrantLock.java:285)  </span><br><span class="line">    at concurrent.TestDeadLock$2.run(TestDeadLock.java:40)  </span><br><span class="line">    at java.lang.Thread.run(Thread.java:745)  </span><br><span class="line">&quot;Thread-0&quot;:  </span><br><span class="line">    at sun.misc.Unsafe.park(Native Method)  </span><br><span class="line">    - parking to wait for  &lt;0x09df1ef8&gt; (a java.util.concurrent.locks.ReentrantLock$NonfairSync)  </span><br><span class="line">    at java.util.concurrent.locks.LockSupport.park(LockSupport.java:175)  </span><br><span class="line">    at java.util.concurrent.locks.AbstractQueuedSynchronizer.parkAndCheckInterrupt(AbstractQueuedSynchronizer.java:836)  </span><br><span class="line">    at java.util.concurrent.locks.AbstractQueuedSynchronizer.acquireQueued(AbstractQueuedSynchronizer.java:870)  </span><br><span class="line">    at java.util.concurrent.locks.AbstractQueuedSynchronizer.acquire(AbstractQueuedSynchronizer.java:1199)  </span><br><span class="line">    at java.util.concurrent.locks.ReentrantLock$NonfairSync.lock(ReentrantLock.java:209)  </span><br><span class="line">    at java.util.concurrent.locks.ReentrantLock.lock(ReentrantLock.java:285)  </span><br><span class="line">    at concurrent.TestDeadLock$1.run(TestDeadLock.java:22)  </span><br><span class="line">    at java.lang.Thread.run(Thread.java:745)</span><br></pre></td></tr></table></figure>
+<p><strong>linux平台：</strong></p>
+<p> 一般linux平台不太方便用图形界面的工具，而一般java的程序都是部署在linux平台上的，这种环境程序发生阻塞时要怎么办呢，和windows思路是一样的，只不过是工具不同而已。<br>首先我在linux上运行我的java程序，程序如期卡住。</p>
+<p><img src="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/java%20%E5%B9%B6%E5%8F%91%E6%AD%BB%E9%94%81%E4%BA%A7%E7%94%9F%E5%8E%9F%E5%9B%A0%E4%B8%8E%E8%AF%8A%E6%96%AD/image3.png" alt="enter description here"></p>
+<p>这时，我运行进程查看命令，找到我的进程：</p>
+<p><img src="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/java%20%E5%B9%B6%E5%8F%91%E6%AD%BB%E9%94%81%E4%BA%A7%E7%94%9F%E5%8E%9F%E5%9B%A0%E4%B8%8E%E8%AF%8A%E6%96%AD/image4.png" alt="enter description here"></p>
+<p>此时可以通过jstack命令导出jvm的栈调用信息：</p>
+<p><img src="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/java%20%E5%B9%B6%E5%8F%91%E6%AD%BB%E9%94%81%E4%BA%A7%E7%94%9F%E5%8E%9F%E5%9B%A0%E4%B8%8E%E8%AF%8A%E6%96%AD/image5.png" alt="enter description here"></p>
+<p>下面是stack.txt中导出的信息（部分）：<br> 找到了和之前windows一样的信息。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">Found one Java-level deadlock:  </span><br><span class="line">=============================  </span><br><span class="line">&quot;Thread-1&quot;:  </span><br><span class="line">  waiting for ownable synchronizer 0x00000000d6c68848, (a java.util.concurrent.locks.ReentrantLock$NonfairSync),  </span><br><span class="line">  which is held by &quot;Thread-0&quot;  </span><br><span class="line">&quot;Thread-0&quot;:  </span><br><span class="line">  waiting for ownable synchronizer 0x00000000d6c68878, (a java.util.concurrent.locks.ReentrantLock$NonfairSync),  </span><br><span class="line">  which is held by &quot;Thread-1&quot;  </span><br><span class="line">  </span><br><span class="line">Java stack information for the threads listed above:  </span><br><span class="line">===================================================  </span><br><span class="line">&quot;Thread-1&quot;:  </span><br><span class="line">    at sun.misc.Unsafe.park(Native Method)  </span><br><span class="line">    - parking to wait for  &lt;0x00000000d6c68848&gt; (a java.util.concurrent.locks.ReentrantLock$NonfairSync)  </span><br><span class="line">    at java.util.concurrent.locks.LockSupport.park(LockSupport.java:186)  </span><br><span class="line">    at java.util.concurrent.locks.AbstractQueuedSynchronizer.parkAndCheckInterrupt(AbstractQueuedSynchronizer.java:834)  </span><br><span class="line">    at java.util.concurrent.locks.AbstractQueuedSynchronizer.acquireQueued(AbstractQueuedSynchronizer.java:867)  </span><br><span class="line">    at java.util.concurrent.locks.AbstractQueuedSynchronizer.acquire(AbstractQueuedSynchronizer.java:1197)  </span><br><span class="line">    at java.util.concurrent.locks.ReentrantLock$NonfairSync.lock(ReentrantLock.java:214)  </span><br><span class="line">    at java.util.concurrent.locks.ReentrantLock.lock(ReentrantLock.java:290)  </span><br><span class="line">    at concurrent.deadlock.TestDeadLock$2.run(TestDeadLock.java:40)  </span><br><span class="line">    at java.lang.Thread.run(Thread.java:745)  </span><br><span class="line">&quot;Thread-0&quot;:  </span><br><span class="line">    at sun.misc.Unsafe.park(Native Method)  </span><br><span class="line">    - parking to wait for  &lt;0x00000000d6c68878&gt; (a java.util.concurrent.locks.ReentrantLock$NonfairSync)  </span><br><span class="line">    at java.util.concurrent.locks.LockSupport.park(LockSupport.java:186)  </span><br><span class="line">    at java.util.concurrent.locks.AbstractQueuedSynchronizer.parkAndCheckInterrupt(AbstractQueuedSynchronizer.java:834)  </span><br><span class="line">    at java.util.concurrent.locks.AbstractQueuedSynchronizer.acquireQueued(AbstractQueuedSynchronizer.java:867)  </span><br><span class="line">    at java.util.concurrent.locks.AbstractQueuedSynchronizer.acquire(AbstractQueuedSynchronizer.java:1197)  </span><br><span class="line">    at java.util.concurrent.locks.ReentrantLock$NonfairSync.lock(ReentrantLock.java:214)  </span><br><span class="line">    at java.util.concurrent.locks.ReentrantLock.lock(ReentrantLock.java:290)  </span><br><span class="line">    at concurrent.deadlock.TestDeadLock$1.run(TestDeadLock.java:22)  </span><br><span class="line">    at java.lang.Thread.run(Thread.java:745)  </span><br><span class="line">  </span><br><span class="line">Found 1 deadlock.</span><br></pre></td></tr></table></figure>
+<p><strong>死锁程序的预防与处理</strong></p>
+<p>避免 死锁的方法就是不要写 顺序不一致加锁 的代码<br> 如果 必须要写顺序不一致的加锁的代码，可以采用 trylock 方法，避免程序一直等待。<br> 预防 死锁可以采用finddebug插件去扫描代码发现死锁。<br> 处理 死锁，如果运行中的程序已经发生死锁，据我所知没有别的办法，只能停止程序，代价非常大，所以要尽量避免死锁。</p>
+<p>关于死锁的避免与预防有时间我再整理一下分享一下我的心得。<br>关于并发编程，想要写出正确可靠高性能的程序实在比较难，我知道的也是一些皮毛，欢迎大家批评指正，互相学习。</p>
+<p>—————————–分割线——————————</p>
+<p>上面是差不多两年前写的文章，如果从死锁的角度出发去学习死锁产生的原因以及分析方法可以按照上面的过程来了解，当然死锁产生的原因也不仅上面一种，还有资源死锁等。</p>
+<p>如果从另外一个角度出发，解决问题的工具箱，通过上面的文章，我们介绍了一个工具<strong>jstack</strong>，他可以打印出程序运行中的调用栈信息，在发生程序卡住，响应缓慢等问题时这也是分析问题原因的一个工具。</p>
+<p>再之前的工作中遇见过一段很简单的代码，执行时间超长，当时分析不出原因，正是通过jstack来分析出的，定位到一个正则性能低下。</p>
+<p>总之，jvm卡在那里不动了，日志也没有错误输出，jstack一把，可以定位程序死在哪一行。</p>
 
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/alipay.png">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://hongkaiwen.github.io/2017/05/26/java-并发死锁产生原因与诊断/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
   
   
-    </div></section>
+    <a href="/2017/05/20/idea-webstorm-安装golang插件/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">idea/webstorm 安装golang插件</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+
+
+
+  
+  
+  
+  <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
+<script>
+  var cloudTieConfig = {
+    url: "http://hongkaiwen.github.io/2017/05/26/java-并发死锁产生原因与诊断/", 
+    sourceId: "java-并发死锁产生原因与诊断",
+    productKey: "true",
+    target: "cloud-tie-wrapper"
+  };
+</script>
+<script src="https://img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
   
 
-    
+  
+
+  
 
 
           </div>
@@ -207,8 +362,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
