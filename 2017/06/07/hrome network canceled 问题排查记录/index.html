@@ -6,21 +6,37 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://hongkaiwen.github.io">
-  <title>mongo 正则查询特殊字符转义 | Kuzan</title>
+  <title>chrome network canceled 问题排查记录 | Kuzan</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="mongo 模糊查询通过正则表达式来实现。
-eg:模糊查询Pattern pattern = Pattern.compile(String.format(“^.%s.$”, groupName), Pattern.CASE_INSENSITIVE);query.append(“name”, pattern);同样正则表达式查询有较大的灵活性，不仅仅可以实现模糊匹配不区分大小写查询Pattern p">
+  <meta name="description" content="今天项目组反应他们的应用切系统在做跳转的时候，会停留在一个空白页。介绍一下背景，项目里采用的cas做单点登录，切系统（从a系统通过超链接进入b系统）的时候会经过几次302.
+原因初探
+我本机打开目标系统按照步骤果然重现问题，打开chrome的开发者工具，抓包下来发现浏览器进入空白页之前的最后一个请求是canceled状态的。
+
+看到这个问题时有点烦，因为之前解决过这个问题，怎么又来。
+之前有一段j">
 <meta property="og:type" content="article">
-<meta property="og:title" content="mongo 正则查询特殊字符转义">
-<meta property="og:url" content="http://hongkaiwen.github.io/2016/04/28/mongo-正则查询特殊字符转义/index.html">
+<meta property="og:title" content="chrome network canceled 问题排查记录">
+<meta property="og:url" content="http://hongkaiwen.github.io/2017/06/07/hrome network canceled 问题排查记录/index.html">
 <meta property="og:site_name" content="Kuzan">
-<meta property="og:description" content="mongo 模糊查询通过正则表达式来实现。
-eg:模糊查询Pattern pattern = Pattern.compile(String.format(“^.%s.$”, groupName), Pattern.CASE_INSENSITIVE);query.append(“name”, pattern);同样正则表达式查询有较大的灵活性，不仅仅可以实现模糊匹配不区分大小写查询Pattern p">
-<meta property="og:updated_time" content="2016-04-28T04:49:10.000Z">
+<meta property="og:description" content="今天项目组反应他们的应用切系统在做跳转的时候，会停留在一个空白页。介绍一下背景，项目里采用的cas做单点登录，切系统（从a系统通过超链接进入b系统）的时候会经过几次302.
+原因初探
+我本机打开目标系统按照步骤果然重现问题，打开chrome的开发者工具，抓包下来发现浏览器进入空白页之前的最后一个请求是canceled状态的。
+
+看到这个问题时有点烦，因为之前解决过这个问题，怎么又来。
+之前有一段j">
+<meta property="og:image" content="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/chrome_network_canceled/chrome_canceled.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/chrome_network_canceled/chrome_canceled_detail.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/chrome_network_canceled/%E6%8A%93%E5%8C%85.png">
+<meta property="og:updated_time" content="2017-06-07T15:23:49.900Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="mongo 正则查询特殊字符转义">
-<meta name="twitter:description" content="mongo 模糊查询通过正则表达式来实现。
-eg:模糊查询Pattern pattern = Pattern.compile(String.format(“^.%s.$”, groupName), Pattern.CASE_INSENSITIVE);query.append(“name”, pattern);同样正则表达式查询有较大的灵活性，不仅仅可以实现模糊匹配不区分大小写查询Pattern p">
+<meta name="twitter:title" content="chrome network canceled 问题排查记录">
+<meta name="twitter:description" content="今天项目组反应他们的应用切系统在做跳转的时候，会停留在一个空白页。介绍一下背景，项目里采用的cas做单点登录，切系统（从a系统通过超链接进入b系统）的时候会经过几次302.
+原因初探
+我本机打开目标系统按照步骤果然重现问题，打开chrome的开发者工具，抓包下来发现浏览器进入空白页之前的最后一个请求是canceled状态的。
+
+看到这个问题时有点烦，因为之前解决过这个问题，怎么又来。
+之前有一段j">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/chrome_network_canceled/chrome_canceled.png">
   
     <link rel="alternative" href="/atom.xml" title="Kuzan" type="application/atom+xml">
   
@@ -146,35 +162,77 @@ eg:模糊查询Pattern pattern = Pattern.compile(String.format(“^.%s.$”, gro
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-mongo-正则查询特殊字符转义" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-hrome network canceled 问题排查记录" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      mongo 正则查询特殊字符转义
+      chrome network canceled 问题排查记录
     </h1>
   
 
         
-        <a href="/2016/04/28/mongo-正则查询特殊字符转义/" class="archive-article-date">
-  	<time datetime="2016-04-28T04:46:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2016-04-28</time>
+        <a href="/2017/06/07/hrome network canceled 问题排查记录/" class="archive-article-date">
+  	<time datetime="2017-06-07T14:27:19.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-07</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p><strong>mongo 模糊查询通过正则表达式来实现。</strong></p>
-<p>eg:<br><em>模糊查询<br>Pattern pattern = Pattern.compile(String.format(“^.</em>%s.<em>$”, groupName), Pattern.CASE_INSENSITIVE);<br>query.append(“name”, pattern);<br>同样正则表达式查询有较大的灵活性，不仅仅可以实现模糊匹配<br>不区分大小写查询<br>Pattern pattern = Pattern.compile(String.format(“^%s$”, groupName), Pattern.CASE_INSENSITIVE);</em></p>
-<p><strong>但是通过正则来做查询功能，前端输入的参数不可以直接作为参数放到上面两个例子的输入参数里，因为前端输入的参数有可能含有正则的元字符： ^ | ( $ 等。</strong></p>
-<p>所以此处需要转义元字符，使其不具备特殊含义。<br>像下面这种查询条件即可使输入的元字符时区特殊含义：<br>{ “fieldName” : { “$regex” : “^.<em>\Q$\E.</em>$” , “$options” : “i”}}</p>
-<p>java 代码实现：</p>
-<pre><code>String displayName = Pattern.quote(input);
-Pattern pattern = Pattern.compile(&quot;^.*&quot;+input+&quot;.*$&quot;, Pattern.CASE_INSENSITIVE);
-query.append(&quot;fieldName&quot;, pattern);
-</code></pre>
+        <p>今天项目组反应他们的应用切系统在做跳转的时候，会停留在一个空白页。<br>介绍一下背景，项目里采用的cas做单点登录，切系统（从a系统通过超链接进入b系统）的时候会经过几次302.</p>
+<p><strong>原因初探</strong></p>
+<p>我本机打开目标系统按照步骤果然重现问题，打开chrome的开发者工具，抓包下来发现浏览器进入空白页之前的最后一个请求是canceled状态的。</p>
+<p><img src="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/chrome_network_canceled/chrome_canceled.png" alt="chrome canceled network"></p>
+<p>看到这个问题时有点烦，因为之前解决过这个问题，怎么又来。</p>
+<p>之前有一段js，也是cas用的，登录时如果service ticket生成成功，进行302跳转到目标系统，当时遇见过这个问题。当时记得google了几个答案，一般说时html dom没有渲染完成或一个网络请求没有结束就进行302跳转会出这种问题，当时的改进方案时在ajax的complete周期进行跳转。当时那个问题也是偶发，改完后观察一段时间也没在遇见过，也就以为解决了（现在看来那个可能还真不是问题原因）。</p>
+<p>回到今天的问题，今天的场景和之前遇见过的还不一样，因为这次跳转没有经过js代码，是服务器端response回来的302，也就是排除了之前那种可能。</p>
+<p>仔细研究下这个canceled的请求报文：<br><img src="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/chrome_network_canceled/chrome_canceled_detail.png" alt="请求报文详情"></p>
+<p>可以看到，没有任何游泳的线索。</p>
+<p><strong>柳暗花明</strong></p>
+<p>跳出之前的思路，根据项目组的反馈，之后跳到某一个特定的系统是偶尔会出现这种情况，跳到其他系统没这问题。沿着这条线往下查，首先想到对比进入两个系统的http报文。显然使用fiddler抓包并保存response报文为文本然后通过文本对比两个报文更容易发现不同的地方。</p>
+<p><img src="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/chrome_network_canceled/%E6%8A%93%E5%8C%85.png" alt="fiddler 保存完整response为文本"></p>
+<p>启用fiddler之后还有一个新的发现，之前在chrome里看到的那个canceled的那个请求，其实是有发到服务器的，而且服务器也有响应。</p>
+<p>然后对比了两个系统的response回302的两个网络请求的响应报文，发现一个不一样的地方。<br>302的response是告诉浏览器跳转到另外一个地址上去，具体的就是通过http response header中的location字段，这个字段里方的是一个url，对比发现两个系统返回的url格式有点区别：(下面非真实数据)</p>
+<p>正常系统：Location: <a href="http://www.abc.com/;JESSIONID=ASFASDFASDFASDFASDF" target="_blank" rel="external">http://www.abc.com/;JESSIONID=ASFASDFASDFASDFASDF</a><br>问题系统：Location: <a href="http://www.def.com;JESSIONID=DDFSDFSDFSDFSDFSDFSDF" target="_blank" rel="external">http://www.def.com;JESSIONID=DDFSDFSDFSDFSDFSDFSDF</a></p>
+<p>区别就在没问题的系统地址后面有一个<strong>斜杠</strong>。</p>
+<p>这两个url后面都跟着JSESSIONID， 这个是一个携带cookie的手段，在浏览器禁用cookie的时候，通过url直接携带cookie。</p>
+<p><strong>问题解决</strong></p>
+<p>两个报文对比完成之后，通知项目组所有的项目地址配置后面加一个斜杠就好了，问题也解决了。</p>
+<p><strong>跟进</strong></p>
+<p>想不通为什么浏览器在这里矫情一个斜杠呢？</p>
+<p>首先自己写了一个简单的服务器程序确认斜杠问题</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">func</span> HelloServer(w http.ResponseWriter, r *http.Request) &#123;</span><br><span class="line">	<span class="comment">//chrome will redirect to the target url</span></span><br><span class="line">	<span class="comment">//	http.Redirect(w, r, "http://test.hongkai.cn:85/;jsessionid=3371D97462347B30C7D55ABD9C455E31", http.StatusFound)</span></span><br><span class="line">	<span class="comment">//chrome will canceled the request because the url is not valid</span></span><br><span class="line">	http.Redirect(w, r, <span class="string">"http://test.hongkai.cn:85;jsessionid=3371D97462347B30C7D55ABD9C455E31"</span>, http.StatusFound)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">func</span> MainServer(w http.ResponseWriter, r *http.Request) &#123;</span><br><span class="line">	io.WriteString(w, <span class="string">"hello, world!\n"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">func</span> main() &#123;</span><br><span class="line">	http.HandleFunc(<span class="string">"/hello"</span>, HelloServer)</span><br><span class="line">	http.HandleFunc(<span class="string">"/"</span>, MainServer)</span><br><span class="line">	err := http.ListenAndServe(<span class="string">":85"</span>, <span class="literal">nil</span>)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatal(<span class="string">"ListenAndServe: "</span>, err)</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<p>完整代码：<a href="https://github.com/HongkaiWen/gostudy/blob/master/httpserver/server.go" target="_blank" rel="external">https://github.com/HongkaiWen/gostudy/blob/master/httpserver/server.go</a></p>
+<p>刚开始测试时，我没有带上jsessionid，并没有重现问题，后来加上jsessionid问题重现：</p>
+<table>
+<thead>
+<tr>
+<th>测试批次</th>
+<th>预期正确地址</th>
+<th>预期错误地址</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><a href="http://test.hongkai.cn:85/" target="_blank" rel="external">http://test.hongkai.cn:85/</a></td>
+<td><a href="http://test.hongkai.cn:85" target="_blank" rel="external">http://test.hongkai.cn:85</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td><a href="http://test.hongkai.cn:85/;jsessionid=" target="_blank" rel="external">http://test.hongkai.cn:85/;jsessionid=</a>…</td>
+<td><a href="http://test.hongkai.cn:85;jsessionid=" target="_blank" rel="external">http://test.hongkai.cn:85;jsessionid=</a>…</td>
+</tr>
+</tbody>
+</table>
+<p><em>（这个域名是我在hosts文件里配到本机的）</em></p>
+<p>第批次的测试，全部都是ok的，chrome并没有canceled的网络请求，第二批次的测试重现了问题，所以问题应该就是第二批次的测试case上：<br><a href="http://test.hongkai.cn:85;jsessionid=" target="_blank" rel="external">http://test.hongkai.cn:85;jsessionid=</a>…<br>所以怀疑这个url是不是一个非法的url呢？<br>通过浏览器直接访问地址：<br><a href="http://www.baidu.com;jsessionid=abc" target="_blank" rel="external">http://www.baidu.com;jsessionid=abc</a><br>浏览器直接给跳google去了，说明浏览器认为这个url不是一个合法的url</p>
+<p>此时问题原因清晰了，浏览器认为这种地址<br><a href="http://www.baidu.com;jsessionid=abc" target="_blank" rel="external">http://www.baidu.com;jsessionid=abc</a><br>不是一个合法的url地址，浏览器并没有把他当成url处理。<br><strong>在服务器端返回302响应的时候，告诉浏览器跳到一个他认为不合法的地址上，浏览器取消了这个请求。</strong></p>
+<p>再次证明一个道理：所有诡异的问题，最终证明下来都是低级错误引起；越诡异，越低级。</p>
+
       
 
       
@@ -208,6 +266,17 @@ query.append(&quot;fieldName&quot;, pattern);
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">chrome 302 canceled</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
 
       
@@ -258,7 +327,7 @@ query.append(&quot;fieldName&quot;, pattern);
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="http://s.jiathis.com/qrcode.php?url=http://hongkaiwen.github.io/2016/04/28/mongo-正则查询特殊字符转义/" alt="微信分享二维码">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://hongkaiwen.github.io/2017/06/07/hrome network canceled 问题排查记录/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -272,18 +341,9 @@ query.append(&quot;fieldName&quot;, pattern);
   
 <nav id="article-nav">
   
-    <a href="/2017/05/20/idea-webstorm-安装golang插件/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          idea/webstorm 安装golang插件
-        
-      </div>
-    </a>
   
-  
-    <a href="/2016/03/05/读书笔记-linux-load查看与分析/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">读书笔记-linux load查看与分析</div>
+    <a href="/2017/05/26/java-并发死锁产生原因与诊断/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">java 并发死锁产生原因与诊断</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -299,8 +359,8 @@ query.append(&quot;fieldName&quot;, pattern);
   <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
 <script>
   var cloudTieConfig = {
-    url: "http://hongkaiwen.github.io/2016/04/28/mongo-正则查询特殊字符转义/", 
-    sourceId: "mongo-正则查询特殊字符转义",
+    url: "http://hongkaiwen.github.io/2017/06/07/hrome network canceled 问题排查记录/", 
+    sourceId: "hrome network canceled 问题排查记录",
     productKey: "true",
     target: "cloud-tie-wrapper"
   };
