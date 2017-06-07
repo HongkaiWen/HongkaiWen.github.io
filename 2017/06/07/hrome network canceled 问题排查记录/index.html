@@ -27,7 +27,7 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/chrome_network_canceled/chrome_canceled.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/chrome_network_canceled/chrome_canceled_detail.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/chrome_network_canceled/%E6%8A%93%E5%8C%85.png">
-<meta property="og:updated_time" content="2017-06-07T15:23:49.900Z">
+<meta property="og:updated_time" content="2017-06-07T15:27:24.306Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="chrome network canceled 问题排查记录">
 <meta name="twitter:description" content="今天项目组反应他们的应用切系统在做跳转的时候，会停留在一个空白页。介绍一下背景，项目里采用的cas做单点登录，切系统（从a系统通过超链接进入b系统）的时候会经过几次302.
@@ -190,7 +190,7 @@
 <p>之前有一段js，也是cas用的，登录时如果service ticket生成成功，进行302跳转到目标系统，当时遇见过这个问题。当时记得google了几个答案，一般说时html dom没有渲染完成或一个网络请求没有结束就进行302跳转会出这种问题，当时的改进方案时在ajax的complete周期进行跳转。当时那个问题也是偶发，改完后观察一段时间也没在遇见过，也就以为解决了（现在看来那个可能还真不是问题原因）。</p>
 <p>回到今天的问题，今天的场景和之前遇见过的还不一样，因为这次跳转没有经过js代码，是服务器端response回来的302，也就是排除了之前那种可能。</p>
 <p>仔细研究下这个canceled的请求报文：<br><img src="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/chrome_network_canceled/chrome_canceled_detail.png" alt="请求报文详情"></p>
-<p>可以看到，没有任何游泳的线索。</p>
+<p>可以看到，没有任何有用的线索。</p>
 <p><strong>柳暗花明</strong></p>
 <p>跳出之前的思路，根据项目组的反馈，之后跳到某一个特定的系统是偶尔会出现这种情况，跳到其他系统没这问题。沿着这条线往下查，首先想到对比进入两个系统的http报文。显然使用fiddler抓包并保存response报文为文本然后通过文本对比两个报文更容易发现不同的地方。</p>
 <p><img src="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/chrome_network_canceled/%E6%8A%93%E5%8C%85.png" alt="fiddler 保存完整response为文本"></p>
