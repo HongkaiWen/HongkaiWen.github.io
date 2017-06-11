@@ -144,6 +144,209 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-《Java-性能调优》读书笔记-Garbage-First-综述" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/06/11/《Java-性能调优》读书笔记-Garbage-First-综述/">《Java 性能调优》读书笔记 -- Garbage First 综述</a>
+    </h1>
+  
+
+        
+        <a href="/2017/06/11/《Java-性能调优》读书笔记-Garbage-First-综述/" class="archive-article-date">
+  	<time datetime="2017-06-11T00:53:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-11</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Garbage-First-综述"><a href="#Garbage-First-综述" class="headerlink" title="Garbage First 综述"></a>Garbage First 综述</h1><h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文为《Java 性能调优》第一章节的读书笔记，是本人阅读过程中理解归纳的一个记录，其中也参杂扩展了《Java性能优化权威指南》中的一部分知识点。</p>
+<h3 id="术语"><a href="#术语" class="headerlink" title="术语"></a>术语</h3><ul>
+<li>并行，这是一个多线程的垃圾回收器</li>
+<li>并发，垃圾回收线程与用户线程同时工作</li>
+<li>stop-the-world （STW），所有应用线程将被暂停</li>
+</ul>
+<p>一个垃圾收集器可以用以上三个术语的一个或多个组合起来进行描述。</p>
+<h3 id="性能优化3大目标"><a href="#性能优化3大目标" class="headerlink" title="性能优化3大目标"></a>性能优化3大目标</h3><ul>
+<li>吞吐量，不考虑垃圾回收引起的停顿和内存消耗，应用所能达到的最高性能指标</li>
+<li>延迟，目标是缩短垃圾回收引起的停顿</li>
+<li>内存占用，应用流畅运行所需的内存总量</li>
+</ul>
+<h3 id="GC调优3选2原则"><a href="#GC调优3选2原则" class="headerlink" title="GC调优3选2原则"></a>GC调优3选2原则</h3><p>选择上面三个属性中的最多两个属性进行优化</p>
+<h3 id="并行垃圾收集器"><a href="#并行垃圾收集器" class="headerlink" title="并行垃圾收集器"></a>并行垃圾收集器</h3><table>
+<thead>
+<tr>
+<th>并行</th>
+<th>并发</th>
+<th>STW</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Y</td>
+<td>N</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><p><strong>概念</strong>，每次发生垃圾回收时，停掉所有应用线程，并行的执行垃圾回收工作。</p>
+</li>
+<li><p><strong>目标</strong>，是提高<strong>吞吐量</strong>，但<strong>延迟</strong>可能会很大。</p>
+</li>
+<li><p><strong>与堆</strong>，堆越大，延迟时间越长。</p>
+</li>
+<li><p><strong>使用场景</strong>，批处理任务。</p>
+</li>
+</ul>
+<h3 id="串行垃圾收集器"><a href="#串行垃圾收集器" class="headerlink" title="串行垃圾收集器"></a>串行垃圾收集器</h3><table>
+<thead>
+<tr>
+<th>并行</th>
+<th>并发</th>
+<th>STW</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N</td>
+<td>N</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>概念</strong>，每次发生垃圾回收时，停掉所有应用线程，串行的执行垃圾回收工作。</li>
+</ul>
+<ul>
+<li><strong>目标</strong>，是降低内存占用，但吞吐量和延迟会比较糟糕。</li>
+</ul>
+<ul>
+<li><p><strong>与堆</strong>，堆越大，延迟时间越长。</p>
+</li>
+<li><p><strong>使用场景</strong>，客户端应用和嵌入式系统。</p>
+</li>
+</ul>
+<h3 id="CMS-垃圾收集器"><a href="#CMS-垃圾收集器" class="headerlink" title="CMS 垃圾收集器"></a>CMS 垃圾收集器</h3><table>
+<thead>
+<tr>
+<th>并行</th>
+<th>并发</th>
+<th>STW</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Y</td>
+<td>Y</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><p><strong>概念</strong>，年轻代与并行垃圾收集器一样，老年代采用标记清理算法，把标记阶段拆分成三个周期，其中只有两个周期需要STW</p>
+</li>
+<li><p><strong>目标</strong>, 缩短延迟时间</p>
+</li>
+<li><p><strong>与堆</strong>， 堆越大，延迟越大（标记时需要扫描整个堆，堆越大，当然需要的时间越长）</p>
+</li>
+<li><p><strong>使用场景</strong>，与客户交互式应用（大部分web应用）</p>
+</li>
+</ul>
+<h4 id="CMS垃圾收集器阶段"><a href="#CMS垃圾收集器阶段" class="headerlink" title="CMS垃圾收集器阶段"></a>CMS垃圾收集器阶段</h4><p>初始标记 –&gt; 并发标记 –&gt; 预清理 –&gt; 重新标记 –&gt; 并发清除</p>
+<h4 id="CMS垃圾收集器注意"><a href="#CMS垃圾收集器注意" class="headerlink" title="CMS垃圾收集器注意"></a>CMS垃圾收集器注意</h4><p>老年代并发收集正在进行的时候有可能会发生一个年轻代的收集，老年代中断，等待年轻代收集。</p>
+<h4 id="CMS垃圾收集器的缺点"><a href="#CMS垃圾收集器的缺点" class="headerlink" title="CMS垃圾收集器的缺点"></a>CMS垃圾收集器的缺点</h4><ul>
+<li>占用更多的内存，比并行GC多用10%~20%</li>
+<li>默认不做内存压缩，会留下很多内存碎片，可开启内存压缩，但会增加延迟时间</li>
+<li>占用应用cpu（并发，与应用线程一起执行），cpu多无所谓（大势所趋，cpu核数原来越多）</li>
+</ul>
+<h3 id="收集器总结"><a href="#收集器总结" class="headerlink" title="收集器总结"></a>收集器总结</h3><p>基本上前三种收集器可以满足大部分场景：嵌入式、批处理、web应用。但他们三个也有一些共同的无法解决的问题：</p>
+<ul>
+<li>堆越大、延迟越大（未来物理机内存肯定是越来越大）</li>
+<li>年轻代和老年代的内存地址是连续的，要先决定年轻代和老年代虚拟地址空间什么位置（这句没理解）</li>
+</ul>
+<p>为了解决这些问题，引入了G1, G1 是CMS的一个不错的替代者，但不见得是并行收集器的替代者。</p>
+<h3 id="G1-垃圾收集器"><a href="#G1-垃圾收集器" class="headerlink" title="G1 垃圾收集器"></a>G1 垃圾收集器</h3><p>G1 采用不同的手段来做垃圾回收，为了避免前几个垃圾回收器面临的共同问题（堆越大性能越差，因为要扫面整个堆），G1把堆分成若干小分区，分而治之的思路</p>
+<p>初始标记 — 并发标记 - 重新标记 - 清除</p>
+<p>超过内存占用阈值，触发初始标记</p>
+<p>初始标记会根着下一次年轻代gc同时进行</p>
+<p>重新标记stw运行</p>
+<p>重新标记之后识别出最适合回收的分区的集合，CSet</p>
+<p>CSet内的分区在接下来的几次年轻代gc中被回收掉（混合收集）</p>
+<p>不管是青年代还是老年代，G1会把每个收集过垃圾的分区中存活的对象转移到一个可用分区中。（G1之前的年轻代也是这种收集逻辑，复制清理）<br>这样做的好处是，垃圾回收过后，内存不会产生碎片。</p>
+<p>G1允许用户设置gc暂停时间目标，G1根据目标自动调整年轻代尺寸和堆的尺寸。</p>
+<p>G1内部包含一个“启发式”算法，可以做自我调整。</p>
+<p>综上，G1使用的场景是“需要合理最大延迟时间的大尺寸java堆的应用”，包括可以替代CMS和并行收集器的应用。但目前采用并行收集器的应用如果可以容忍最大延迟时间比较长，并行收集器仍然是最好的选择。</p>
+<p><strong>G1 设计</strong></p>
+<p>分区尺寸 </p>
+<ul>
+<li>1、2、4、8、16、32 mb</li>
+<li>jvm运行过程中尺寸不会发生变化</li>
+<li>尺寸是根据堆初始值和最大值的平均数来的</li>
+</ul>
+<p>Rset</p>
+<p>每个分区包含一个Rset，他是一个关联的记忆集合，记录跟踪分区外指向分区内的引用，避免堆整个堆的扫描。<br>Rset尺寸以来应用的行为，最小大概占堆的1%，最多可能会达到20%。</p>
+<p>一个分区一次最多只能用于一个目的</p>
+<p>可用分区 -&gt; 被使用（作为年轻代、老年代、巨型对象…） -&gt; 被垃圾回收 -&gt; 可用分区</p>
+<p>当标记阶段如果发现老年代分区中没有任何存活对象，G1会提前将这个分区回收；反之，如果有包含存活对象则安排到未来将发生的混合收集中进行回收</p>
+<p>G1 并发标记线程为了避免占用过多的cpu，工作方式是爆发式的，一段时间内拼命干活，任何暂停一段时间让应用线程工作。</p>
+<p><strong>巨型对象</strong></p>
+<p>尺寸特别大的对象，甚至超过一个分区的大小，给他们分配专门的分区（甚至几个分区联合盛放一个巨型对象）</p>
+<p><strong>full gc</strong></p>
+<p>g1垃圾回收过程中如果发生任何不幸，内存不够了之类的，就引发一个full gc，对整个堆回收一把（和cms类似），而且是串行的垃圾回收器（搞不懂为啥不并行），g1希望不进行full gc，或通过调优实现不发生full gc。个人理解，要去监控g1的gc日志，如果发生过full gc就要进行分析和调优了，cms也一样。</p>
+<p><strong>并发周期</strong></p>
+<p>初始标记  并发根分区扫描  并发标记  重新标记  清除</p>
+<p>stw的包括初始标记和重新标记，初始标记跟着年轻代收集一起，因为年轻代收集本来也要做这个事情</p>
+<p><strong>堆空间调整</strong></p>
+<p>G1堆大小在 -Xms 和 -Xmx 之间动态的扩大或缩小</p>
+<p>增加堆尺寸的几个理由：</p>
+<ul>
+<li>在一次full gc中，基于堆尺寸的计算结果会调整堆的空间  （没看懂）</li>
+<li>在发生年轻代收集或混合收集时，G1会计算花费的时间，以及执行java应用所花费的时间，在根据用户预期的时间（-XX:GCTimeRatio）进行调整</li>
+<li>对象分配失败时</li>
+<li>巨型对象分配失败，找不到连续的内存空间</li>
+<li>gc需要一个新的分区来转移对象的时候（没看懂）</li>
+<li></li>
+</ul>
+<p><strong>读书总结</strong></p>
+<p>本章主要通过G1之前的垃圾收集器做引子，逐步引出G1垃圾收集器。主要简单的讲了G1的一些基本概念和过程，细节的地方讲的不全。G1的思路是可以的，未来在工作中满足下面的条件时考虑用G1替换cms：</p>
+<ul>
+<li>大尺寸java堆</li>
+<li>最大延迟过长（因为gc的原因）</li>
+<li>并发垃圾回收器吞吐量够，但是最大延迟时间无法忍受</li>
+</ul>
+<p>当然还需要继续阅读接下来几章，来了解G1调优的策略监控的重点指标等。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/06/11/《Java-性能调优》读书笔记-Garbage-First-综述/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
     <article id="post-hrome network canceled 问题排查记录" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -625,11 +828,11 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">idea,golang,plugin,webstorm,JetBrains</a>
+                <a href="javascript:void(0)" class="js-tag color5">chrome 302 canceled</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">chrome 302 canceled</a>
+                <a href="javascript:void(0)" class="js-tag color3">idea,golang,plugin,webstorm,JetBrains</a>
               </li>
              
               <li class="article-tag-list-item">
