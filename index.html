@@ -208,6 +208,11 @@
 <p>再加一句，分布式系统下，监控真的很重要，如果这台机器有io资源方面的监控预警，我们就能提前收到预警邮件，就能为我们排查问题提供重要的线索。</p>
 <h3 id="广告"><a href="#广告" class="headerlink" title="广告"></a>广告</h3><p>我们部门研发的私有云产品就有监控&amp;预警功能，可以大大的降低运维成本，像上面的案例，如果上了我们的平台，即使没有能力去分析这些也可以快速定位。</p>
 <p>ps：为什么上面的案例没有监控的影子，因为这是我们开发环境，监控没配全…</p>
+<h3 id="此类问题本地调试办法"><a href="#此类问题本地调试办法" class="headerlink" title="此类问题本地调试办法"></a>此类问题本地调试办法</h3><p>上面所说的是针对线上环境的栈分析手段（通过jstack），如果是本地有环境可以重现问题，那有更快捷的调试办法。<br>现在idea或eclipse都有类似的调试手段，下面简单已idea为例做一个演示。<br>比如有下面一段代码<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">    TimeUnit.SECONDS.sleep(<span class="number">100</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这段代码模拟程序运行起来后卡住的效果我以debug模式启动，程序卡住不退出（假设我不知道程序里写了什么），下面要分析原因：<br><img src="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/%E5%BA%94%E7%94%A8%E4%B8%AA%E5%88%AB%E6%8E%A5%E5%8F%A3%E6%97%A0%E5%93%8D%E5%BA%94%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5%E8%AE%B0%E5%BD%95/debug.png" alt="image"></p>
+<p>进入debug模式后，点击“暂停”按钮，如下图可见目前运行的所有线程，根据线程状态找出怀疑有问题的线程：<br><img src="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/%E5%BA%94%E7%94%A8%E4%B8%AA%E5%88%AB%E6%8E%A5%E5%8F%A3%E6%97%A0%E5%93%8D%E5%BA%94%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5%E8%AE%B0%E5%BD%95/detail.png" alt="image"><br>很明显那个sleep的线程有问题，选择此线程，展示栈列表：<br><img src="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/%E5%BA%94%E7%94%A8%E4%B8%AA%E5%88%AB%E6%8E%A5%E5%8F%A3%E6%97%A0%E5%93%8D%E5%BA%94%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5%E8%AE%B0%E5%BD%95/target.png" alt="image"><br>找到应用代码栈，直接双击，直接定位到源代码。</p>
+<p>当然这只是最简单的例子，如果因为加锁顺序不一致引起的死锁，或者资源问题引起的资源死锁，获取其他复杂的情况，排查过程还是要靠细心分析，此处只介绍工具使用。</p>
+<p>ps：eclipse也有类似的功能，也是在debug模式，点击一个叫suspend的按钮去做类似的分析，具体不截图了，电脑里没eclipse。</p>
 
       
 
@@ -919,15 +924,15 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">chrome 302 canceled</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">idea,golang,plugin,webstorm,JetBrains</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">读书笔记</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">chrome 302 canceled</a>
               </li>
             
             <div class="clearfix"></div>
