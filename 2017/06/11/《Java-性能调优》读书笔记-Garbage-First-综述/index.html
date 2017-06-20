@@ -28,7 +28,7 @@ stop-the-world （STW），所有应用线程将被暂停
 
 一个垃圾收集器可以用以上三个术语的一个或多个组合起来进行描述。
 性能优化">
-<meta property="og:updated_time" content="2017-06-11T00:54:09.589Z">
+<meta property="og:updated_time" content="2017-06-20T14:17:38.011Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="《Java 性能调优》读书笔记 -- Garbage First 综述">
 <meta name="twitter:description" content="Garbage First 综述前言本文为《Java 性能调优》第一章节的读书笔记，是本人阅读过程中理解归纳的一个记录，其中也参杂扩展了《Java性能优化权威指南》中的一部分知识点。
@@ -325,11 +325,11 @@ stop-the-world （STW），所有应用线程将被暂停
 <p>G1堆大小在 -Xms 和 -Xmx 之间动态的扩大或缩小</p>
 <p>增加堆尺寸的几个理由：</p>
 <ul>
-<li>在一次full gc中，基于堆尺寸的计算结果会调整堆的空间  （没看懂）</li>
+<li>在一次full gc中，基于堆尺寸的计算结果会调整堆的空间  </li>
 <li>在发生年轻代收集或混合收集时，G1会计算花费的时间，以及执行java应用所花费的时间，在根据用户预期的时间（-XX:GCTimeRatio）进行调整</li>
 <li>对象分配失败时</li>
 <li>巨型对象分配失败，找不到连续的内存空间</li>
-<li>gc需要一个新的分区来转移对象的时候（没看懂）</li>
+<li>gc需要一个新的分区来转移对象的时候</li>
 <li></li>
 </ul>
 <p><strong>读书总结</strong></p>
@@ -568,15 +568,15 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">chrome 302 canceled</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">idea,golang,plugin,webstorm,JetBrains</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">读书笔记</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">chrome 302 canceled</a>
               </li>
             
             <div class="clearfix"></div>
