@@ -832,6 +832,213 @@ query.append(&quot;fieldName&quot;, pattern);
 
 
   
+    <article id="post-String 类型双等号操作符与intern方法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/08/06/String 类型双等号操作符与intern方法/">String 类型双等号操作符与intern方法</a>
+    </h1>
+  
+
+        
+        <a href="/2015/08/06/String 类型双等号操作符与intern方法/" class="archive-article-date">
+  	<time datetime="2015-08-06T00:53:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2015-08-06</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>等号 （ == ）操作符常常用来和equal方法比较，对于引用类型，== 操作符相当于比较内存地址，同一个类型的两个实例，用==判断结果一定是false；equal方法不同对象实现不同。<br>然，对于String类型做如下测试代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">String a = <span class="string">"abc"</span>;  </span><br><span class="line">String b = <span class="string">"abc"</span>;  </span><br><span class="line">System.out.println(a == b);</span><br></pre></td></tr></table></figure>
+<p>变量a、b是String类型的两个变量，String非基础类型，双等号判断内存地址，结果应该是false，但这段代码输出的是true。<br>why？</p>
+<p>针对String类型双等号，equal，intren 我设计了几个case，测试报告如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">case 1 [a-&gt; &quot;abc&quot;, b-&gt; &quot;abc&quot;]  </span><br><span class="line">a==b, result is [true]  </span><br><span class="line">a.equals(b), result is [true]  </span><br><span class="line">  </span><br><span class="line">case 2 [a-&gt; &quot;abc&quot;, b-&gt; &quot;ab&quot; + &quot;c&quot;]  </span><br><span class="line">a==b, result is [true]  </span><br><span class="line">a.equals(b), result is [true]  </span><br><span class="line">  </span><br><span class="line">case 3 [c-&gt; &quot;c&quot;, a-&gt; &quot;abc&quot;, b-&gt; &quot;ab&quot; + c]  </span><br><span class="line">a==b, result is [false]  </span><br><span class="line">a.equals(b), result is [true]  </span><br><span class="line">action [String.intern]  </span><br><span class="line">a=b, result is [true]  </span><br><span class="line">  </span><br><span class="line">case 4 [a-&gt; &quot;abc&quot;, b-&gt; new String(&quot;abc&quot;)]  </span><br><span class="line">a==b, result is [false]  </span><br><span class="line">a.equals(b), result is [true]  </span><br><span class="line">action [String.intern]  </span><br><span class="line">a=b, result is [true]</span><br></pre></td></tr></table></figure>
+<p>这个测试结果是比较令我感到诧异的，有很多和我想象中不一样的地方。</p>
+<ul>
+<li>case1 和 case2的双等号判断，都是true，这本是不同的两个对象做双等号判断，怎么会是true呢？</li>
+<li>既然case1 和case2的双等号判断是true，为什么case3 和 case4 的双等号判断又是false了呢？</li>
+<li>为什么调用了intern方法之后，原来是false的判断就编程了true了呢？</li>
+</ul>
+<p>根据第三点可以猜测一下，intern方法应该是会把引用互相equal的却不是同一个对象的字符串对象的变量合并成指向同一个字符串对象（此句好绕口， 用英语试试？ intern will make 2 different reference who refer to 2 different String object refer to 1 same string object）， 因为String类型是不可变对象，所以这种处理即可节省内存空间，又不会有什么问题，<strong>因为String是不可变对象</strong>。</p>
+<p>java.lang.String#intern方法的非猜测解释：<br>这是一个native的方法，虚拟机在运行时有一块内存区域叫做“运行时常量池”，常量池用来存放编译期生成的各种<strong>字面量</strong>和<strong>符号引用</strong>。<br>intern方法的作用是，如果字符串常量池中包含一个等于此String对象的字符串，则返回代表池中这个字符串的对象，否则，将此String对象好汉的字符串添加到常量池中，并返回此String对象的引用。<br>这样不难解释为什么原本false的结果调用过intern之后就变成了true。</p>
+<p>那么现在解释一下1 和 2 两个疑问：<br>前面所说，常量池用来存放编译期生成的各<strong>种字面量</strong>和<strong>符号引用</strong>， case1 和 case2 正好都是字面量，所以他们会被加入到常量池中，常量池中互相equal的字符串肯定是不允许存在的，所以相当于两个变量指向到了同一个对象。<br>（什么是字面量，自行百度，其实我也是看的百度，但有一个情况需要说一下：<br>case 2 中 a-&gt; “abc”, b-&gt; “ab” + “c” ， b由两个字面量拼接而成，b还是字面量；<br>case 3 中 c-&gt; “c”, a-&gt; “abc”, b-&gt; “ab” + c，b由一个字面量和变量c 拼接而成，b不是字面量<br>）</p>
+<p>参考资料：</p>
+<ol>
+<li>《深入理解JAVA虚拟机》 第二版 第二章</li>
+<li><a href="http://www.cnblogs.com/zdwillie/archive/2013/10/23/3384766.html" target="_blank" rel="external">http://www.cnblogs.com/zdwillie/archive/2013/10/23/3384766.html</a></li>
+</ol>
+<p>附录：（生成测试报告的代码）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestString</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span></span>&#123;  </span><br><span class="line">        Map&lt;String, String&gt; cases = <span class="keyword">new</span> LinkedHashMap&lt;String, String&gt;();  </span><br><span class="line">        init(cases);  </span><br><span class="line">        <span class="keyword">for</span>(Map.Entry&lt;String, String&gt; case_ : cases.entrySet())&#123;  </span><br><span class="line">            System.out.println(String.format(<span class="string">"case [%s]"</span>, case_.getKey()));  </span><br><span class="line">            test(<span class="string">"abc"</span>, case_.getValue());  </span><br><span class="line">            System.out.println();  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">(String a, String b)</span></span>&#123;  </span><br><span class="line">        <span class="keyword">boolean</span> result = (a==b);  </span><br><span class="line">        System.out.println(String.format(<span class="string">"a==b, result is [%s]"</span>, result));  </span><br><span class="line">        System.out.println(String.format(<span class="string">"a.equals(b), result is [%s]"</span>,a.equals(b)));  </span><br><span class="line">        <span class="keyword">if</span>(!result)&#123;  </span><br><span class="line">            System.out.println(<span class="string">"action [String.intern]"</span>);  </span><br><span class="line">            b = b.intern();  </span><br><span class="line">            System.out.println(String.format(<span class="string">"a=b, result is [%s]"</span>, a==b));  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">(Map&lt;String, String&gt; cases)</span></span>&#123;  </span><br><span class="line">        cases.put(<span class="string">"a-&gt; \"abc\", b-&gt; \"abc\""</span>, <span class="string">"abc"</span>);  </span><br><span class="line">        cases.put(<span class="string">"a-&gt; \"abc\", b-&gt; \"ab\" + \"c\""</span>, <span class="string">"ab"</span> + <span class="string">"c"</span>);  </span><br><span class="line">        String c = <span class="string">"c"</span>;  </span><br><span class="line">        cases.put(<span class="string">"c-&gt; \"c\", a-&gt; \"abc\", b-&gt; \"ab\" + c"</span>, <span class="string">"ab"</span> + c);  </span><br><span class="line">        cases.put(<span class="string">"a-&gt; \"abc\", b-&gt; new String(\"abc\")"</span>, <span class="keyword">new</span> String(<span class="string">"abc"</span>));  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2015/08/06/String 类型双等号操作符与intern方法/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
+    <article id="post-java 线程池与通过Future终止线程实例" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/08/02/java 线程池与通过Future终止线程实例/">java 线程池与通过Future终止线程实例</a>
+    </h1>
+  
+
+        
+        <a href="/2015/08/02/java 线程池与通过Future终止线程实例/" class="archive-article-date">
+  	<time datetime="2015-08-02T00:53:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2015-08-02</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>上周在单位无聊，公司电脑又不能上网，想研究一些swing相关的东西，结果swing没怎么研究，到是写了一个比较坑爹的游戏。</p>
+<p>游戏开始之后，出现此框，鼠标点击到此框即算过关，框框是一直在乱跳的，跳的频率随着关口的靠后会加快。</p>
+<p><img src="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/%E7%BA%BF%E7%A8%8B%E7%BB%88%E6%AD%A2/game.png" alt="image"></p>
+<p>设计思路：<br>程序加载时new一个frame，不允许frame最大化，但是鼠标滚动可以改变框框的大小（这算一后门），frame中添加一个button，在button中添加两个事件，一个是监听鼠标滚动事件，一个是监听点击事件。<br>点击事件发生后会改变框框跳动的频率。当累计超过10次被框框逃脱即算失败。<br>框框跳动的动作在一个单独的线程中进行。</p>
+<p>所用技术：</p>
+<ol>
+<li>swing</li>
+<li>多线程，线程池，线程终止</li>
+</ol>
+<p>下面是完整代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> javax.swing.*;  </span><br><span class="line"><span class="keyword">import</span> java.awt.*;  </span><br><span class="line"><span class="keyword">import</span> java.awt.event.ActionEvent;  </span><br><span class="line"><span class="keyword">import</span> java.awt.event.ActionListener;  </span><br><span class="line"><span class="keyword">import</span> java.awt.event.MouseWheelEvent;  </span><br><span class="line"><span class="keyword">import</span> java.awt.event.MouseWheelListener;  </span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.*;  </span><br><span class="line">  </span><br><span class="line"><span class="comment">/** </span><br><span class="line"> * Created by player on 2015/8/1. </span><br><span class="line"> */</span>  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CatchMe</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> width = <span class="number">200</span>;  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> length = <span class="number">200</span>;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Dimension scrSize=Toolkit.getDefaultToolkit().getScreenSize();  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> X = (<span class="keyword">int</span>) (scrSize.getWidth()/<span class="number">2</span>);  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> Y = (<span class="keyword">int</span>) (scrSize.getHeight()/<span class="number">2</span>);  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> JButton button;  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> JFrame frame;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> level = <span class="number">1</span>;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Future&lt;?&gt; task;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> ExecutorService pool = Executors.newSingleThreadExecutor();  </span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">static</span>&#123;  </span><br><span class="line">        frame = <span class="keyword">new</span> JFrame();  </span><br><span class="line">        frame.setSize(width, length);  </span><br><span class="line">        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);  </span><br><span class="line">        frame.setLocation(X, Y);  </span><br><span class="line">        frame.setTitle(<span class="string">"catch me ~"</span>);  </span><br><span class="line">        frame.setResizable(<span class="keyword">false</span>);  </span><br><span class="line">        button = <span class="keyword">new</span> JButton();  </span><br><span class="line">        button.setName(<span class="string">"Catch Me"</span>);  </span><br><span class="line">        button.setText(<span class="string">"click to start~"</span>);  </span><br><span class="line">        frame.add(button);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span></span>&#123;  </span><br><span class="line">        addScrollListener();  </span><br><span class="line">        addCatchListener();  </span><br><span class="line">        frame.setVisible(<span class="keyword">true</span>);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">addScrollListener</span><span class="params">()</span></span>&#123;  </span><br><span class="line">        button.addMouseWheelListener(<span class="keyword">new</span> MouseWheelListener()&#123;  </span><br><span class="line">            <span class="meta">@Override</span>  </span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">mouseWheelMoved</span><span class="params">(MouseWheelEvent event)</span> </span>&#123;  </span><br><span class="line">                <span class="keyword">int</span> wheelRotation = event.getWheelRotation();  </span><br><span class="line">                width += (wheelRotation * event.getScrollAmount());  </span><br><span class="line">                length += (wheelRotation * event.getScrollAmount());  </span><br><span class="line">                frame.setSize(width, length);  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">addCatchListener</span><span class="params">()</span></span>&#123;  </span><br><span class="line">        button.addActionListener(<span class="keyword">new</span> ActionListener() &#123;  </span><br><span class="line">            <span class="meta">@Override</span>  </span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">actionPerformed</span><span class="params">(ActionEvent e)</span> </span>&#123;  </span><br><span class="line">                button.setText(String.format(<span class="string">"level [%d]"</span>, level++));  </span><br><span class="line">                <span class="keyword">if</span>(task == <span class="keyword">null</span>)  </span><br><span class="line">                    task = pool.submit(moveTask);  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">loss</span><span class="params">()</span></span>&#123;  </span><br><span class="line">        <span class="comment">//stop  </span></span><br><span class="line">        <span class="keyword">if</span>(task != <span class="keyword">null</span>)&#123;  </span><br><span class="line">            task.cancel(<span class="keyword">true</span>);  </span><br><span class="line">        &#125;  </span><br><span class="line">        <span class="comment">//show  </span></span><br><span class="line">        button.setText(<span class="string">"mission failed at level ["</span>+(level-<span class="number">1</span>)+<span class="string">"]"</span>);  </span><br><span class="line">        level = <span class="number">1</span>;  </span><br><span class="line">        task = <span class="keyword">null</span>;  </span><br><span class="line">        width = <span class="number">200</span>;  </span><br><span class="line">        length = <span class="number">200</span>;  </span><br><span class="line">        frame.setSize(width, length);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Runnable moveTask = <span class="keyword">new</span> Runnable() &#123;  </span><br><span class="line">        <span class="meta">@Override</span>  </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">            <span class="keyword">int</span> escape = <span class="number">0</span>;  </span><br><span class="line">            <span class="keyword">int</span> max = <span class="number">10</span>;  </span><br><span class="line">            <span class="keyword">while</span>(!Thread.currentThread().isInterrupted())&#123;  </span><br><span class="line">                <span class="keyword">if</span>(escape &gt;= max)&#123;  </span><br><span class="line">                    loss();  </span><br><span class="line">                    escape = <span class="number">0</span>;  </span><br><span class="line">                    <span class="keyword">break</span>;  </span><br><span class="line">                &#125;  </span><br><span class="line">                X = (<span class="keyword">int</span>)(Math.random() * <span class="number">1000</span>);  </span><br><span class="line">                Y = (<span class="keyword">int</span>)(Math.random() * <span class="number">800</span>);  </span><br><span class="line">                frame.setLocation(X, Y);  </span><br><span class="line">                escape ++;  </span><br><span class="line">                <span class="keyword">try</span> &#123;  </span><br><span class="line">                    TimeUnit.MILLISECONDS.sleep(<span class="number">3000</span>/level);  </span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;&#125;  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;;  </span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过ide的导出功能可以打成一个可执行的jar包，双击一下即可运行，我老婆玩了一下，说这倒霉游戏太坑爹了。</p>
+<p>关于线程终止可以多说几句鄙人的浅显认识，java线程的终止是非抢占的，这是官方说法，大概是这么说的吧，意思是什么呢，先不管怎么能让一个线程终止，就说你让一个线程终止的时候，线程不会立刻终止，你需要在你的代码中特定的检查点检查“终止状态”，如果状态是“已经终止”线程中的代码就进行相应的处理。</p>
+<p>关于“终止状态”，可以设置一个变量，比如一个布尔型的flag，默认是true，当需要终止线程的时候把这个变量编程false，那么在线程执行的代码中，比较“重要的点”，检查一下这个状态，如果编程了false就不要往下继续进行了，并可以做一些操作去响应这个终止的信号。</p>
+<p>关于“重要的点”，这个要根据程序中的逻辑来判断，不可能没句话都检查一下，比如多线程中要做一个打开链接的操作，可能在打开后设置一个检查的点，如果flag变成了false，就不要往下继续进行了，并且要把链接关掉（比如jdbc链接）。（反过来想，如果java线程终止是抢占式的，那岂不是不给咱们机会去关链接了）。</p>
+<p>有一种特殊情况，阻塞的代码，正在运行的代码可以通过判断状态来处理，如果是阻塞的代码，程序已经卡在那里，无法判断状态，怎么办呢（比如我上面代码中的TimeUnit.MILLISECONDS.sleep(3000/level) 这一行，程序在睡眠的时候如果想要终止程序，不可能一定要等到阻塞的代码恢复后继续走到检查点在去做判断，那样响应时间无法保证），java提供了几种方式终止线程，比如我代码中用的调用Future.cancel(true),这样代码中的阻塞语句如果发现有人调用了取消方法，就会抛出InterruptedException异常，我这里是不需要针对取消操作做什么处理的，如果是需要处理，在catch到异常后可以做善后处理。 </p>
+<p>还有，我这个程序中的“终止状态”的判断用的是Thread.currentThread().isInterrupted()。</p>
+<p><a href="https://github.com/HongkaiWen/images/blob/master/blog/%E7%BA%BF%E7%A8%8B%E7%BB%88%E6%AD%A2/catchme.jar?raw=true" target="_blank" rel="external">游戏下载</a></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2015/08/02/java 线程池与通过Future终止线程实例/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
+    <article id="post-漫谈设计模式---策略模式" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2012/01/09/漫谈设计模式---策略模式/">漫谈设计模式---策略模式</a>
+    </h1>
+  
+
+        
+        <a href="/2012/01/09/漫谈设计模式---策略模式/" class="archive-article-date">
+  	<time datetime="2012-01-09T00:53:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2012-01-09</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>设计模式，我一直把设计模式想象成兵法，精妙的兵法可以结构化的、优雅的组织代码。以一种聪明的方式去实现功能，并且具有极强的可维护性。</p>
+<p>说设计模式应该先从软件设计的思想说起，比如开闭原则，开：对扩展开放；闭：对修改关闭。这就需要什么呢？把不变的部分抽象出来并进行封装。软件设计还有一个原则叫做面向接口编程。接口是什么，这是我第一个想谈的东西，算是我想到所有东西的起点。接口，用书里的话来说就是一个标准，定义好这个标准之后，类库和客户端程序员就可以按照这个标准来进行开发，而不必关心实现的细节。从另一个角度来说，接口也是一个基类，所有实现此接口的细节实现都可以向上转型为这个基类，并为别人所用。下面开始我的“漫谈”，重口味啊，不喜勿进。</p>
+<p>接口—标准也。什么事标准？就拿老丈人定义的标准来说，确切的说，一个适龄待嫁女青年的父亲给自己的女婿定义了一套标准：1、有房。2、有车。3、对自己女儿好。这就是一个接口其实，因为这是一套标准，只有实现了此标准（接口）的人才能成为他的女婿。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> House <span class="title">getHouse</span><span class="params">()</span></span>;  </span><br><span class="line">      <span class="function"><span class="keyword">public</span> Car  <span class="title">getCar</span><span class="params">()</span></span>;  </span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">takeCareOfGirl</span><span class="params">()</span></span>;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样，女婿就成为了一个接口，但是女婿不可以被实例化，不能说“他是一个女婿”，但是假如“小明”实现了女婿接口，并成为了老头的女婿，小明就可以向上转型为基类“女婿”，老头的女婿指向的就是小明了。这样有什么用呢？老头可以说，我要一个这样这样的女婿，有这这个女婿之后我可以调用女婿的这样这样的方法。</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"> <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FatherInLaw</span></span>&#123;  </span><br><span class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">MarryMyDaughter</span> <span class="params">(SonInLaw sonInLaw)</span></span>&#123;  </span><br><span class="line">     House house = sonInLaw.getHouse();  </span><br><span class="line">     Car car = sonInLaw.getCar();  </span><br><span class="line">     sonInLaw.takeCareOfGirl();  </span><br><span class="line">     ……  </span><br><span class="line">     &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到FatherInLaw的嫁女儿的方法（marryMyDaughter）里必须要求传入一个女婿（SonInLaw）类，因为嫁女儿必须调用女婿的获得房子，获得小汽车，照顾女孩儿三个方法。这里岳父是不关心女婿其他的，只关心他是实现了那个女婿接口，也就是说可以向上转型为女婿。这也是面向对象设计的一个原则：面向接口编程。那么小明如果实现了接口，怎么去娶老头的女儿呢？<br>小明类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Xiaoming</span> <span class="keyword">implements</span> <span class="title">SonInLaw</span></span>&#123;  </span><br><span class="line">   <span class="keyword">private</span> Car car;  </span><br><span class="line">   <span class="function"><span class="keyword">public</span> Car <span class="title">getCar</span><span class="params">()</span></span>&#123;  </span><br><span class="line">        <span class="keyword">return</span> car;  </span><br><span class="line">   &#125;  </span><br><span class="line">   <span class="keyword">private</span> House house;  </span><br><span class="line">   <span class="function"><span class="keyword">public</span> House <span class="title">getHouse</span><span class="params">()</span></span>&#123;  </span><br><span class="line">        <span class="keyword">return</span> house;  </span><br><span class="line">   &#125;  </span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">tackCareOfGirl</span><span class="params">()</span></span>&#123;  </span><br><span class="line">        System.out.println(<span class="string">"照顾女孩"</span>);  </span><br><span class="line">   &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下面是测试类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestSon</span></span>&#123;<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;  </span><br><span class="line">       FatherInLaw fatherInLaw = <span class="keyword">new</span> FatherInLaw();  </span><br><span class="line">       fatherInLaw.marryMyDaughter(<span class="keyword">new</span> Xiaoming());  </span><br><span class="line">   &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>小明类就是一个实现了女婿接口的类，换句非程序的话说就是一个达到了老头嫁女儿标准的人。在测试类里，有一个岳父对象被初始化，之后调用此对象的嫁女儿方法，此方法需要传入一个实现了女婿接口的类，我们把小明穿进去，老头就成功的把女儿嫁出去了。</p>
+<p>例子就说完整了。里边利用接口，使岳父不必关心女婿的细节实现，只是定义一个接口，实现我的接口就可以了。就是OO中的面向接口编程。并且这个例子里还有一个设计模式—策略模式。</p>
+<p>策略模式定义了一系列的算法，并将每一个算法封装起来，而且使它们还可以相互替换。策略模式让算法独立于使用它的客户而独立变化—-百度百科。</p>
+<p> 这里的小明其实就是算法族中的一个，不仅可以有小明，还可以有小刚、小强、小白……只要他们实现了女婿接口，就可以传给岳父的嫁女儿方法。岳父是不关心具体的实现的（他不关心你是小强还是蟑螂），他只关心你是否实现了女婿接口。</p>
+<p>再回归文章开头说的原则：开闭原则，老头嫁女儿方法是不变的：有房有车疼女儿。女婿是可以变的–小明、小刚和小强，not at all。这里正是抽象并封装了不变的部分：嫁女儿方法。开放了扩展部分—各种女婿。</p>
+<p>好了，今天就说道这吧。下次我准备写代理模式和适配器模式。小强们是怎样实现女婿接口的—拼爹，拼爹就是代理啊适配器啊，其实是小强他爹实现了女婿方法，小强不过是一个适配器罢了。哈哈~~</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">设计模式</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2012/01/09/漫谈设计模式---策略模式/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
   
 
 
@@ -929,6 +1136,10 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">idea,golang,plugin,webstorm,JetBrains</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
               </li>
              
               <li class="article-tag-list-item">

@@ -6,17 +6,29 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://hongkaiwen.github.io">
-  <title>Tag: chrome 302 canceled | Kuzan</title>
+  <title>java 线程池与通过Future终止线程实例 | Kuzan</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="blog or something else">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Kuzan">
-<meta property="og:url" content="http://hongkaiwen.github.io/tags/chrome-302-canceled/index.html">
+  <meta name="description" content="上周在单位无聊，公司电脑又不能上网，想研究一些swing相关的东西，结果swing没怎么研究，到是写了一个比较坑爹的游戏。
+游戏开始之后，出现此框，鼠标点击到此框即算过关，框框是一直在乱跳的，跳的频率随着关口的靠后会加快。
+
+设计思路：程序加载时new一个frame，不允许frame最大化，但是鼠标滚动可以改变框框的大小（这算一后门），frame中添加一个button，在button中添加两个事件">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java 线程池与通过Future终止线程实例">
+<meta property="og:url" content="http://hongkaiwen.github.io/2015/08/02/java 线程池与通过Future终止线程实例/index.html">
 <meta property="og:site_name" content="Kuzan">
-<meta property="og:description" content="blog or something else">
+<meta property="og:description" content="上周在单位无聊，公司电脑又不能上网，想研究一些swing相关的东西，结果swing没怎么研究，到是写了一个比较坑爹的游戏。
+游戏开始之后，出现此框，鼠标点击到此框即算过关，框框是一直在乱跳的，跳的频率随着关口的靠后会加快。
+
+设计思路：程序加载时new一个frame，不允许frame最大化，但是鼠标滚动可以改变框框的大小（这算一后门），frame中添加一个button，在button中添加两个事件">
+<meta property="og:image" content="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/%E7%BA%BF%E7%A8%8B%E7%BB%88%E6%AD%A2/game.png">
+<meta property="og:updated_time" content="2017-06-20T14:42:29.393Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Kuzan">
-<meta name="twitter:description" content="blog or something else">
+<meta name="twitter:title" content="java 线程池与通过Future终止线程实例">
+<meta name="twitter:description" content="上周在单位无聊，公司电脑又不能上网，想研究一些swing相关的东西，结果swing没怎么研究，到是写了一个比较坑爹的游戏。
+游戏开始之后，出现此框，鼠标点击到此框即算过关，框框是一直在乱跳的，跳的频率随着关口的靠后会加快。
+
+设计思路：程序加载时new一个frame，不允许frame最大化，但是鼠标滚动可以改变框框的大小（这算一后门），frame中添加一个button，在button中添加两个事件">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/%E7%BA%BF%E7%A8%8B%E7%BB%88%E6%AD%A2/game.png">
   
     <link rel="alternative" href="/atom.xml" title="Kuzan" type="application/atom+xml">
   
@@ -142,60 +154,181 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-java 线程池与通过Future终止线程实例" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/06/07/hrome network canceled 问题排查记录/" class="archive-article-date">
-  	<time datetime="2017-06-07T14:27:19.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-07</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/06/07/hrome network canceled 问题排查记录/">chrome network canceled 问题排查记录</a>
+    <h1 class="article-title" itemprop="name">
+      java 线程池与通过Future终止线程实例
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">chrome 302 canceled</a>
-        		</li>
-      		
-		</ul>
-	</div>
+        
+        <a href="/2015/08/02/java 线程池与通过Future终止线程实例/" class="archive-article-date">
+  	<time datetime="2015-08-02T00:53:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2015-08-02</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>上周在单位无聊，公司电脑又不能上网，想研究一些swing相关的东西，结果swing没怎么研究，到是写了一个比较坑爹的游戏。</p>
+<p>游戏开始之后，出现此框，鼠标点击到此框即算过关，框框是一直在乱跳的，跳的频率随着关口的靠后会加快。</p>
+<p><img src="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/%E7%BA%BF%E7%A8%8B%E7%BB%88%E6%AD%A2/game.png" alt="image"></p>
+<p>设计思路：<br>程序加载时new一个frame，不允许frame最大化，但是鼠标滚动可以改变框框的大小（这算一后门），frame中添加一个button，在button中添加两个事件，一个是监听鼠标滚动事件，一个是监听点击事件。<br>点击事件发生后会改变框框跳动的频率。当累计超过10次被框框逃脱即算失败。<br>框框跳动的动作在一个单独的线程中进行。</p>
+<p>所用技术：</p>
+<ol>
+<li>swing</li>
+<li>多线程，线程池，线程终止</li>
+</ol>
+<p>下面是完整代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> javax.swing.*;  </span><br><span class="line"><span class="keyword">import</span> java.awt.*;  </span><br><span class="line"><span class="keyword">import</span> java.awt.event.ActionEvent;  </span><br><span class="line"><span class="keyword">import</span> java.awt.event.ActionListener;  </span><br><span class="line"><span class="keyword">import</span> java.awt.event.MouseWheelEvent;  </span><br><span class="line"><span class="keyword">import</span> java.awt.event.MouseWheelListener;  </span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.*;  </span><br><span class="line">  </span><br><span class="line"><span class="comment">/** </span><br><span class="line"> * Created by player on 2015/8/1. </span><br><span class="line"> */</span>  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CatchMe</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> width = <span class="number">200</span>;  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> length = <span class="number">200</span>;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Dimension scrSize=Toolkit.getDefaultToolkit().getScreenSize();  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> X = (<span class="keyword">int</span>) (scrSize.getWidth()/<span class="number">2</span>);  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> Y = (<span class="keyword">int</span>) (scrSize.getHeight()/<span class="number">2</span>);  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> JButton button;  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> JFrame frame;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> level = <span class="number">1</span>;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Future&lt;?&gt; task;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> ExecutorService pool = Executors.newSingleThreadExecutor();  </span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">static</span>&#123;  </span><br><span class="line">        frame = <span class="keyword">new</span> JFrame();  </span><br><span class="line">        frame.setSize(width, length);  </span><br><span class="line">        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);  </span><br><span class="line">        frame.setLocation(X, Y);  </span><br><span class="line">        frame.setTitle(<span class="string">"catch me ~"</span>);  </span><br><span class="line">        frame.setResizable(<span class="keyword">false</span>);  </span><br><span class="line">        button = <span class="keyword">new</span> JButton();  </span><br><span class="line">        button.setName(<span class="string">"Catch Me"</span>);  </span><br><span class="line">        button.setText(<span class="string">"click to start~"</span>);  </span><br><span class="line">        frame.add(button);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span></span>&#123;  </span><br><span class="line">        addScrollListener();  </span><br><span class="line">        addCatchListener();  </span><br><span class="line">        frame.setVisible(<span class="keyword">true</span>);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">addScrollListener</span><span class="params">()</span></span>&#123;  </span><br><span class="line">        button.addMouseWheelListener(<span class="keyword">new</span> MouseWheelListener()&#123;  </span><br><span class="line">            <span class="meta">@Override</span>  </span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">mouseWheelMoved</span><span class="params">(MouseWheelEvent event)</span> </span>&#123;  </span><br><span class="line">                <span class="keyword">int</span> wheelRotation = event.getWheelRotation();  </span><br><span class="line">                width += (wheelRotation * event.getScrollAmount());  </span><br><span class="line">                length += (wheelRotation * event.getScrollAmount());  </span><br><span class="line">                frame.setSize(width, length);  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">addCatchListener</span><span class="params">()</span></span>&#123;  </span><br><span class="line">        button.addActionListener(<span class="keyword">new</span> ActionListener() &#123;  </span><br><span class="line">            <span class="meta">@Override</span>  </span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">actionPerformed</span><span class="params">(ActionEvent e)</span> </span>&#123;  </span><br><span class="line">                button.setText(String.format(<span class="string">"level [%d]"</span>, level++));  </span><br><span class="line">                <span class="keyword">if</span>(task == <span class="keyword">null</span>)  </span><br><span class="line">                    task = pool.submit(moveTask);  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">loss</span><span class="params">()</span></span>&#123;  </span><br><span class="line">        <span class="comment">//stop  </span></span><br><span class="line">        <span class="keyword">if</span>(task != <span class="keyword">null</span>)&#123;  </span><br><span class="line">            task.cancel(<span class="keyword">true</span>);  </span><br><span class="line">        &#125;  </span><br><span class="line">        <span class="comment">//show  </span></span><br><span class="line">        button.setText(<span class="string">"mission failed at level ["</span>+(level-<span class="number">1</span>)+<span class="string">"]"</span>);  </span><br><span class="line">        level = <span class="number">1</span>;  </span><br><span class="line">        task = <span class="keyword">null</span>;  </span><br><span class="line">        width = <span class="number">200</span>;  </span><br><span class="line">        length = <span class="number">200</span>;  </span><br><span class="line">        frame.setSize(width, length);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Runnable moveTask = <span class="keyword">new</span> Runnable() &#123;  </span><br><span class="line">        <span class="meta">@Override</span>  </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">            <span class="keyword">int</span> escape = <span class="number">0</span>;  </span><br><span class="line">            <span class="keyword">int</span> max = <span class="number">10</span>;  </span><br><span class="line">            <span class="keyword">while</span>(!Thread.currentThread().isInterrupted())&#123;  </span><br><span class="line">                <span class="keyword">if</span>(escape &gt;= max)&#123;  </span><br><span class="line">                    loss();  </span><br><span class="line">                    escape = <span class="number">0</span>;  </span><br><span class="line">                    <span class="keyword">break</span>;  </span><br><span class="line">                &#125;  </span><br><span class="line">                X = (<span class="keyword">int</span>)(Math.random() * <span class="number">1000</span>);  </span><br><span class="line">                Y = (<span class="keyword">int</span>)(Math.random() * <span class="number">800</span>);  </span><br><span class="line">                frame.setLocation(X, Y);  </span><br><span class="line">                escape ++;  </span><br><span class="line">                <span class="keyword">try</span> &#123;  </span><br><span class="line">                    TimeUnit.MILLISECONDS.sleep(<span class="number">3000</span>/level);  </span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;&#125;  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;;  </span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过ide的导出功能可以打成一个可执行的jar包，双击一下即可运行，我老婆玩了一下，说这倒霉游戏太坑爹了。</p>
+<p>关于线程终止可以多说几句鄙人的浅显认识，java线程的终止是非抢占的，这是官方说法，大概是这么说的吧，意思是什么呢，先不管怎么能让一个线程终止，就说你让一个线程终止的时候，线程不会立刻终止，你需要在你的代码中特定的检查点检查“终止状态”，如果状态是“已经终止”线程中的代码就进行相应的处理。</p>
+<p>关于“终止状态”，可以设置一个变量，比如一个布尔型的flag，默认是true，当需要终止线程的时候把这个变量编程false，那么在线程执行的代码中，比较“重要的点”，检查一下这个状态，如果编程了false就不要往下继续进行了，并可以做一些操作去响应这个终止的信号。</p>
+<p>关于“重要的点”，这个要根据程序中的逻辑来判断，不可能没句话都检查一下，比如多线程中要做一个打开链接的操作，可能在打开后设置一个检查的点，如果flag变成了false，就不要往下继续进行了，并且要把链接关掉（比如jdbc链接）。（反过来想，如果java线程终止是抢占式的，那岂不是不给咱们机会去关链接了）。</p>
+<p>有一种特殊情况，阻塞的代码，正在运行的代码可以通过判断状态来处理，如果是阻塞的代码，程序已经卡在那里，无法判断状态，怎么办呢（比如我上面代码中的TimeUnit.MILLISECONDS.sleep(3000/level) 这一行，程序在睡眠的时候如果想要终止程序，不可能一定要等到阻塞的代码恢复后继续走到检查点在去做判断，那样响应时间无法保证），java提供了几种方式终止线程，比如我代码中用的调用Future.cancel(true),这样代码中的阻塞语句如果发现有人调用了取消方法，就会抛出InterruptedException异常，我这里是不需要针对取消操作做什么处理的，如果是需要处理，在catch到异常后可以做善后处理。 </p>
+<p>还有，我这个程序中的“终止状态”的判断用的是Thread.currentThread().isInterrupted()。</p>
+<p><a href="https://github.com/HongkaiWen/images/blob/master/blog/%E7%BA%BF%E7%A8%8B%E7%BB%88%E6%AD%A2/catchme.jar?raw=true" target="_blank" rel="external">游戏下载</a></p>
 
-          
+      
 
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/alipay.png">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://hongkaiwen.github.io/2015/08/02/java 线程池与通过Future终止线程实例/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+    <a href="/2015/08/06/String 类型双等号操作符与intern方法/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          String 类型双等号操作符与intern方法
+        
+      </div>
+    </a>
   
   
-    </div></section>
+    <a href="/2012/01/09/漫谈设计模式---策略模式/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">漫谈设计模式---策略模式</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+
+
+
+  
+  
+  
+  <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
+<script>
+  var cloudTieConfig = {
+    url: "http://hongkaiwen.github.io/2015/08/02/java 线程池与通过Future终止线程实例/", 
+    sourceId: "java 线程池与通过Future终止线程实例",
+    productKey: "true",
+    target: "cloud-tie-wrapper"
+  };
+</script>
+<script src="//img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
   
 
-    
+  
+
+  
 
 
           </div>
@@ -218,9 +351,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false,
 		root: "/",

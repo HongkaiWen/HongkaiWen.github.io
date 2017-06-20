@@ -6,17 +6,24 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://hongkaiwen.github.io">
-  <title>Tag: chrome 302 canceled | Kuzan</title>
+  <title>String 类型双等号操作符与intern方法 | Kuzan</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="blog or something else">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Kuzan">
-<meta property="og:url" content="http://hongkaiwen.github.io/tags/chrome-302-canceled/index.html">
+  <meta name="description" content="等号 （ == ）操作符常常用来和equal方法比较，对于引用类型，== 操作符相当于比较内存地址，同一个类型的两个实例，用==判断结果一定是false；equal方法不同对象实现不同。然，对于String类型做如下测试代码：
+123String a = &quot;abc&quot;;  String b = &quot;abc&quot;;  System.out.println(a == b);
+变量a、b是String类型的两个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="String 类型双等号操作符与intern方法">
+<meta property="og:url" content="http://hongkaiwen.github.io/2015/08/06/String 类型双等号操作符与intern方法/index.html">
 <meta property="og:site_name" content="Kuzan">
-<meta property="og:description" content="blog or something else">
+<meta property="og:description" content="等号 （ == ）操作符常常用来和equal方法比较，对于引用类型，== 操作符相当于比较内存地址，同一个类型的两个实例，用==判断结果一定是false；equal方法不同对象实现不同。然，对于String类型做如下测试代码：
+123String a = &quot;abc&quot;;  String b = &quot;abc&quot;;  System.out.println(a == b);
+变量a、b是String类型的两个">
+<meta property="og:updated_time" content="2017-06-20T14:28:52.600Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Kuzan">
-<meta name="twitter:description" content="blog or something else">
+<meta name="twitter:title" content="String 类型双等号操作符与intern方法">
+<meta name="twitter:description" content="等号 （ == ）操作符常常用来和equal方法比较，对于引用类型，== 操作符相当于比较内存地址，同一个类型的两个实例，用==判断结果一定是false；equal方法不同对象实现不同。然，对于String类型做如下测试代码：
+123String a = &quot;abc&quot;;  String b = &quot;abc&quot;;  System.out.println(a == b);
+变量a、b是String类型的两个">
   
     <link rel="alternative" href="/atom.xml" title="Kuzan" type="application/atom+xml">
   
@@ -142,60 +149,184 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-String 类型双等号操作符与intern方法" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/06/07/hrome network canceled 问题排查记录/" class="archive-article-date">
-  	<time datetime="2017-06-07T14:27:19.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-07</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/06/07/hrome network canceled 问题排查记录/">chrome network canceled 问题排查记录</a>
+    <h1 class="article-title" itemprop="name">
+      String 类型双等号操作符与intern方法
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">chrome 302 canceled</a>
-        		</li>
-      		
-		</ul>
-	</div>
+        
+        <a href="/2015/08/06/String 类型双等号操作符与intern方法/" class="archive-article-date">
+  	<time datetime="2015-08-06T00:53:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2015-08-06</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>等号 （ == ）操作符常常用来和equal方法比较，对于引用类型，== 操作符相当于比较内存地址，同一个类型的两个实例，用==判断结果一定是false；equal方法不同对象实现不同。<br>然，对于String类型做如下测试代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">String a = <span class="string">"abc"</span>;  </span><br><span class="line">String b = <span class="string">"abc"</span>;  </span><br><span class="line">System.out.println(a == b);</span><br></pre></td></tr></table></figure>
+<p>变量a、b是String类型的两个变量，String非基础类型，双等号判断内存地址，结果应该是false，但这段代码输出的是true。<br>why？</p>
+<p>针对String类型双等号，equal，intren 我设计了几个case，测试报告如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">case 1 [a-&gt; &quot;abc&quot;, b-&gt; &quot;abc&quot;]  </span><br><span class="line">a==b, result is [true]  </span><br><span class="line">a.equals(b), result is [true]  </span><br><span class="line">  </span><br><span class="line">case 2 [a-&gt; &quot;abc&quot;, b-&gt; &quot;ab&quot; + &quot;c&quot;]  </span><br><span class="line">a==b, result is [true]  </span><br><span class="line">a.equals(b), result is [true]  </span><br><span class="line">  </span><br><span class="line">case 3 [c-&gt; &quot;c&quot;, a-&gt; &quot;abc&quot;, b-&gt; &quot;ab&quot; + c]  </span><br><span class="line">a==b, result is [false]  </span><br><span class="line">a.equals(b), result is [true]  </span><br><span class="line">action [String.intern]  </span><br><span class="line">a=b, result is [true]  </span><br><span class="line">  </span><br><span class="line">case 4 [a-&gt; &quot;abc&quot;, b-&gt; new String(&quot;abc&quot;)]  </span><br><span class="line">a==b, result is [false]  </span><br><span class="line">a.equals(b), result is [true]  </span><br><span class="line">action [String.intern]  </span><br><span class="line">a=b, result is [true]</span><br></pre></td></tr></table></figure>
+<p>这个测试结果是比较令我感到诧异的，有很多和我想象中不一样的地方。</p>
+<ul>
+<li>case1 和 case2的双等号判断，都是true，这本是不同的两个对象做双等号判断，怎么会是true呢？</li>
+<li>既然case1 和case2的双等号判断是true，为什么case3 和 case4 的双等号判断又是false了呢？</li>
+<li>为什么调用了intern方法之后，原来是false的判断就编程了true了呢？</li>
+</ul>
+<p>根据第三点可以猜测一下，intern方法应该是会把引用互相equal的却不是同一个对象的字符串对象的变量合并成指向同一个字符串对象（此句好绕口， 用英语试试？ intern will make 2 different reference who refer to 2 different String object refer to 1 same string object）， 因为String类型是不可变对象，所以这种处理即可节省内存空间，又不会有什么问题，<strong>因为String是不可变对象</strong>。</p>
+<p>java.lang.String#intern方法的非猜测解释：<br>这是一个native的方法，虚拟机在运行时有一块内存区域叫做“运行时常量池”，常量池用来存放编译期生成的各种<strong>字面量</strong>和<strong>符号引用</strong>。<br>intern方法的作用是，如果字符串常量池中包含一个等于此String对象的字符串，则返回代表池中这个字符串的对象，否则，将此String对象好汉的字符串添加到常量池中，并返回此String对象的引用。<br>这样不难解释为什么原本false的结果调用过intern之后就变成了true。</p>
+<p>那么现在解释一下1 和 2 两个疑问：<br>前面所说，常量池用来存放编译期生成的各<strong>种字面量</strong>和<strong>符号引用</strong>， case1 和 case2 正好都是字面量，所以他们会被加入到常量池中，常量池中互相equal的字符串肯定是不允许存在的，所以相当于两个变量指向到了同一个对象。<br>（什么是字面量，自行百度，其实我也是看的百度，但有一个情况需要说一下：<br>case 2 中 a-&gt; “abc”, b-&gt; “ab” + “c” ， b由两个字面量拼接而成，b还是字面量；<br>case 3 中 c-&gt; “c”, a-&gt; “abc”, b-&gt; “ab” + c，b由一个字面量和变量c 拼接而成，b不是字面量<br>）</p>
+<p>参考资料：</p>
+<ol>
+<li>《深入理解JAVA虚拟机》 第二版 第二章</li>
+<li><a href="http://www.cnblogs.com/zdwillie/archive/2013/10/23/3384766.html" target="_blank" rel="external">http://www.cnblogs.com/zdwillie/archive/2013/10/23/3384766.html</a></li>
+</ol>
+<p>附录：（生成测试报告的代码）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestString</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span></span>&#123;  </span><br><span class="line">        Map&lt;String, String&gt; cases = <span class="keyword">new</span> LinkedHashMap&lt;String, String&gt;();  </span><br><span class="line">        init(cases);  </span><br><span class="line">        <span class="keyword">for</span>(Map.Entry&lt;String, String&gt; case_ : cases.entrySet())&#123;  </span><br><span class="line">            System.out.println(String.format(<span class="string">"case [%s]"</span>, case_.getKey()));  </span><br><span class="line">            test(<span class="string">"abc"</span>, case_.getValue());  </span><br><span class="line">            System.out.println();  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">(String a, String b)</span></span>&#123;  </span><br><span class="line">        <span class="keyword">boolean</span> result = (a==b);  </span><br><span class="line">        System.out.println(String.format(<span class="string">"a==b, result is [%s]"</span>, result));  </span><br><span class="line">        System.out.println(String.format(<span class="string">"a.equals(b), result is [%s]"</span>,a.equals(b)));  </span><br><span class="line">        <span class="keyword">if</span>(!result)&#123;  </span><br><span class="line">            System.out.println(<span class="string">"action [String.intern]"</span>);  </span><br><span class="line">            b = b.intern();  </span><br><span class="line">            System.out.println(String.format(<span class="string">"a=b, result is [%s]"</span>, a==b));  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">(Map&lt;String, String&gt; cases)</span></span>&#123;  </span><br><span class="line">        cases.put(<span class="string">"a-&gt; \"abc\", b-&gt; \"abc\""</span>, <span class="string">"abc"</span>);  </span><br><span class="line">        cases.put(<span class="string">"a-&gt; \"abc\", b-&gt; \"ab\" + \"c\""</span>, <span class="string">"ab"</span> + <span class="string">"c"</span>);  </span><br><span class="line">        String c = <span class="string">"c"</span>;  </span><br><span class="line">        cases.put(<span class="string">"c-&gt; \"c\", a-&gt; \"abc\", b-&gt; \"ab\" + c"</span>, <span class="string">"ab"</span> + c);  </span><br><span class="line">        cases.put(<span class="string">"a-&gt; \"abc\", b-&gt; new String(\"abc\")"</span>, <span class="keyword">new</span> String(<span class="string">"abc"</span>));  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-          
+      
 
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/alipay.png">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://hongkaiwen.github.io/2015/08/06/String 类型双等号操作符与intern方法/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+    <a href="/2015/09/03/java-并发死锁产生原因与诊断/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          java 并发死锁产生原因与诊断
+        
+      </div>
+    </a>
   
   
-    </div></section>
+    <a href="/2015/08/02/java 线程池与通过Future终止线程实例/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">java 线程池与通过Future终止线程实例</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+
+
+
+  
+  
+  
+  <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
+<script>
+  var cloudTieConfig = {
+    url: "http://hongkaiwen.github.io/2015/08/06/String 类型双等号操作符与intern方法/", 
+    sourceId: "String 类型双等号操作符与intern方法",
+    productKey: "true",
+    target: "cloud-tie-wrapper"
+  };
+</script>
+<script src="//img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
   
 
-    
+  
+
+  
 
 
           </div>
@@ -218,9 +349,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false,
 		root: "/",
