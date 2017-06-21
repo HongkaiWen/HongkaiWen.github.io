@@ -174,7 +174,7 @@
 </ul>
 <p>代码静态分析下来，这个接口没有上面说的任何一种问题。</p>
 <p>这样看来，不得不请出jvm工具来分析一下了，而现在的问题是应用无响应，很明显要dump出应用的栈信息来分析一下。</p>
-<p>本文主要记录问题解决的过程而不是纯理论。理论dump jvm 栈信息相关的介绍参考 <a href="http://hongkaiwen.github.io/2017/05/26/java-%E5%B9%B6%E5%8F%91%E6%AD%BB%E9%94%81%E4%BA%A7%E7%94%9F%E5%8E%9F%E5%9B%A0%E4%B8%8E%E8%AF%8A%E6%96%AD/">java 并发死锁产生原因与诊断</a></p>
+<p>本文主要记录问题解决的过程而不是纯理论。理论dump jvm 栈信息相关的介绍参考 <a href="https://hongkaiwen.github.io/2015/09/03/java-%E5%B9%B6%E5%8F%91%E6%AD%BB%E9%94%81%E4%BA%A7%E7%94%9F%E5%8E%9F%E5%9B%A0%E4%B8%8E%E8%AF%8A%E6%96%AD/">java 并发死锁产生原因与诊断</a></p>
 <h3 id="jdk-下载"><a href="#jdk-下载" class="headerlink" title="jdk 下载"></a>jdk 下载</h3><p>我们的应用是通过docker 的容器里的，基础镜像为了精简，运行时只有jre没有jdk，所以，先下一个jdk（此处在官网找解压即用的jdk版本），并解压。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it &lt;container id&gt; /bin/bash</span><br><span class="line">wget --no-check-certificate --no-cookies --header &quot;Cookie: oraclelicense=accept-securebackup-cookie&quot; &lt;jdk url&gt;</span><br></pre></td></tr></table></figure>
 <h3 id="查找进程id"><a href="#查找进程id" class="headerlink" title="查找进程id"></a>查找进程id</h3><p>找到应用的进程号<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -ef | grep &lt;key word&gt;</span><br></pre></td></tr></table></figure></p>
@@ -1131,11 +1131,11 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">chrome 302 canceled</a>
+                <a href="javascript:void(0)" class="js-tag color3">idea,golang,plugin,webstorm,JetBrains</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">idea,golang,plugin,webstorm,JetBrains</a>
+                <a href="javascript:void(0)" class="js-tag color5">chrome 302 canceled</a>
               </li>
              
               <li class="article-tag-list-item">
