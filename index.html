@@ -144,6 +144,116 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-java-线上调试工具-greys-anatomy-实践初探" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/07/22/java-线上调试工具-greys-anatomy-实践初探/">java 线上调试工具 greys-anatomy 实践初探</a>
+    </h1>
+  
+
+        
+        <a href="/2017/07/22/java-线上调试工具-greys-anatomy-实践初探/" class="archive-article-date">
+  	<time datetime="2017-07-22T15:12:26.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-22</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="java-线上调试工具-greys-anatomy-实践初探"><a href="#java-线上调试工具-greys-anatomy-实践初探" class="headerlink" title="java 线上调试工具 greys-anatomy 实践初探"></a>java 线上调试工具 greys-anatomy 实践初探</h1><hr>
+<p>有这样一种场景，跑在线上环境的jvm进程发生了错误，错误日志无法清晰的定位问题，或因为日志不够详尽或因为异常被吃掉没有完整的堆栈信息，一般做法是修改代码重新发布实验性的去打印更多的信息，又要重新发布程序。或者在本地试图去重现这个问题通过ide工具进行debug调试。总之这是一个比较尴尬的情况，添加过日志后还面临着两个问题：</p>
+<ul>
+<li>日志添加的不全还要添加再次添加日志</li>
+<li>查到了问题，还要去掉日志代码重新发布程序</li>
+</ul>
+<p>下面介绍一个线上jvm进程调试的工具，可以说是一个神器，<a href="https://github.com/oldmanpushcart/greys-anatomy" target="_blank" rel="external">greys-anatomy</a></p>
+<p>细节（安装、使用、原理）可以阅读github上面的文档，本文旨在根据一个简单的场景让大家快速上手这个工具，至于更多更详细的功能，还需要去官文学习。</p>
+<h3 id="虚拟场景"><a href="#虚拟场景" class="headerlink" title="虚拟场景"></a>虚拟场景</h3><p>周末老板要紧急上线一个系统，经过周六一天的紧急加班（写bug），终于按时提交测试。<br>源码提交在github，<a href="https://github.com/HongkaiWen/web-play" target="_blank" rel="external">codereview</a></p>
+<p>当然，没有经过各位大神review，我已经把系统发布到我的测试环境。</p>
+<p>测试人员花了1分钟对所有功能功能进行了详细的测试，系统仅有的两个功能全部测试不通过：</p>
+<table>
+<thead>
+<tr>
+<th>bug num</th>
+<th>功能</th>
+<th>功能入口</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>查看系统版本</td>
+<td>/system/version</td>
+<td>页面提示 system error</td>
+</tr>
+<tr>
+<td>2</td>
+<td>校验余额是否不足</td>
+<td>/low/balance/check?userId=399</td>
+<td>页面提示系统500错误 </td>
+</tr>
+</tbody>
+</table>
+<p>自己写的bug跪着也要解决啊…</p>
+<h3 id="bug-1"><a href="#bug-1" class="headerlink" title="bug 1"></a>bug 1</h3><p>去线上系统重现问题，果然提示system error，看日志吧，日志输出如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2017-07-22 10:36:47.564 ERROR 2988 --- [nio-8080-exec-2] c.g.h.w.controller.IndexController       : system error</span><br></pre></td></tr></table></figure></p>
+<p>没有任何堆栈信息，查看代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">systemVersion</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">try</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> playService.systemVersion();</span><br><span class="line">    &#125;<span class="keyword">catch</span>(Exception e)&#123;</span><br><span class="line">        logger.error(<span class="string">"system error"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"system error"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这段代码写的很有水平，吃异常并不一定是不正确的做法，但是日志中直接把堆栈信息丢掉一般一定是在给自己挖坑。日志正常的打印方法应该是这样的：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">logger.error(<span class="string">"system error"</span>, e);</span><br></pre></td></tr></table></figure></p>
+<p>现在service层发生的异常堆栈信息全部丢掉了，常规做法一般是这样的：<br>修改日志代码 -&gt; 重新发布 -&gt; 重现错误 -&gt; 定位问题 -&gt; 解决问题</p>
+<p>现在借助<a href="https://github.com/oldmanpushcart/greys-anatomy" target="_blank" rel="external">greys-anatomy</a>就可以直接在线上定位问题，查看堆栈信息。</p>
+<p>进入greys工具：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[root@dev greys]# jps</span><br><span class="line">3049 Jps</span><br><span class="line">2988 Bootstrap</span><br><span class="line">[root@dev greys]# ./greys.sh 2988</span><br><span class="line">                                                        _                    </span><br><span class="line">  ____  ____ _____ _   _  ___ _____ _____ ____  _____ _| |_ ___  ____  _   _ </span><br><span class="line"> / _  |/ ___) ___ | | | |/___|_____|____ |  _ \(____ (_   _) _ \|    \| | | |</span><br><span class="line">( (_| | |   | ____| |_| |___ |     / ___ | | | / ___ | | || |_| | | | | |_| |</span><br><span class="line"> \___ |_|   |_____)\__  (___/      \_____|_| |_\_____|  \__)___/|_|_|_|\__  |</span><br><span class="line">(_____|           (____/                                              (____/ </span><br><span class="line">                                              +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">                                              |v|e|r|s|i|o|n|:|1|.|7|.|6|.|4|</span><br><span class="line">                                              +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">ga?&gt;</span><br><span class="line">ga?&gt;</span><br></pre></td></tr></table></figure></p>
+<p>这里使用watch （Display the details of specified class and method）工具来分析问题，可以通过help watch来查看具体使用方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">ga?&gt;help watch</span><br><span class="line">+---------+----------------------------------------------------------------------------------+</span><br><span class="line">|   USAGE | -[bfesx:En:] class-pattern method-pattern express condition-express              |</span><br><span class="line">|         | Display the details of specified class and method                                |</span><br><span class="line">+---------+----------------------------------------------------------------------------------+</span><br><span class="line">| OPTIONS |              [b] | Watch before invocation                                       |</span><br><span class="line">|         | -----------------+-------------------------------------------------------------- |</span><br><span class="line">|         |              [f] | Watch after invocation                                        |</span><br><span class="line">|         | -----------------+-------------------------------------------------------------- |</span><br><span class="line">|         |              [e] | Watch after throw exception                                   |</span><br><span class="line">|         | -----------------+-------------------------------------------------------------- |</span><br><span class="line">|         |              [s] | Watch after successful invocation                             |</span><br><span class="line">|         | -----------------+-------------------------------------------------------------- |</span><br><span class="line">|         |             [x:] | Expand level of object (0 by default)                         |</span><br><span class="line">|         | -----------------+-------------------------------------------------------------- |</span><br><span class="line">|         |              [E] | Enable regular expression to match (wildcard matching by def  |</span><br><span class="line">|         |                  | ault)                                                         |</span><br><span class="line">|         | -----------------+-------------------------------------------------------------- |</span><br><span class="line">|         |             [n:] | Threshold of execution times                                  |</span><br><span class="line">……</span><br></pre></td></tr></table></figure>
+<p>这里只截取了片段，此处异常被吃掉，我需要查下抛出异常的方法所抛的异常信息是什么，最好是能把堆栈打出来。<br>此处异常是service层跑出来的，就watch下service （playService.systemVersion()）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">watch -e *PlayService* systemVersion throwExp.printStackTrace()</span><br></pre></td></tr></table></figure></p>
+<p>简单解释下：</p>
+<ul>
+<li>-e表示：Watch after throw exception</li>
+<li>*PlayService* 是通配匹配类名，也可以写具体类名</li>
+<li>systemVersion 是方法名</li>
+<li>throwExp 是工具定义的参数名，表示抛出的异常对象的</li>
+</ul>
+<p>执行完上面这句之后，再次重现问题，查看应用日志中输出了详细的堆栈信息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">java.lang.RuntimeException: ssss</span><br><span class="line">	at com.github.hongkaiwen.webplay.service.PlayService.systemVersion(PlayService.java:12)</span><br><span class="line">	at com.github.hongkaiwen.webplay.controller.IndexController.systemVersion(IndexController.java:28)</span><br><span class="line">	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)</span><br><span class="line">	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)</span><br><span class="line">	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)</span><br><span class="line">	at java.lang.reflect.Method.invoke(Method.java:498)</span><br><span class="line">	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:205)</span><br><span class="line">……</span><br></pre></td></tr></table></figure></p>
+<h3 id="bug-2"><a href="#bug-2" class="headerlink" title="bug 2"></a>bug 2</h3><p>这个接口调用第三方接口（假设我写的service层方法就是一个第三方的http接口）校验余额是否不足，预期的第三方接口返回的是一个json字符串。<br>在线上系统重现问题，系统日志中内容输出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">com.alibaba.fastjson.JSONException: syntax error, pos 1</span><br><span class="line">	at com.alibaba.fastjson.parser.DefaultJSONParser.parse(DefaultJSONParser.java:1295) ~[fastjson-1.2.7.jar:na]</span><br><span class="line">	at com.alibaba.fastjson.parser.DefaultJSONParser.parse(DefaultJSONParser.java:1205) ~[fastjson-1.2.7.jar:na]</span><br><span class="line">	……</span><br></pre></td></tr></table></figure></p>
+<p>很明显，第三方接口返回的不是一个json，但和第三方扯比较麻烦，我们需要知道第三方到底返回了什么东西。<br>使用watch工具，查看第三方接口方法的返回值：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">watch -f *PlayService* balanceQuery  returnObj</span><br></pre></td></tr></table></figure></p>
+<p>重现问题，然后查看控制台输出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;&lt;body&gt;500 Internal Error: xxxxx&lt;/body&gt;&lt;/html&gt;</span><br></pre></td></tr></table></figure></p>
+<p>很明显第三方系统除了问题了。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>上面这个例子是我故意写的俩bug，但类似场景我相信总有人遇到过，没有这个工具也能解决，但有了这个工具，我们可以更快捷的定位问题，这种好东西一定要放到自的工具箱。</p>
+<h3 id="延伸"><a href="#延伸" class="headerlink" title="延伸"></a>延伸</h3><p>这个工具不只是我介绍的这一点功能，大家可以花点时间去简单研究下（半个小时就够了），看看有哪些功能，怎么安装，遇到问题的时候也许用得到。</p>
+<p>help 查看所有工具：<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"> ga?&gt;help</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|       sc | Search all the classes loaded by JVM                                             |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|       sm | Search the method of classes loaded by JVM                                       |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|  monitor | Monitor the execution of specified Class and its method                          |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|    watch | Display the details of specified class and method                                |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|       tt | Time Tunnel                                                                      |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|    stack | Display the stack trace of specified class and method                            |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|   ptrace | Display the detailed thread path stack of specified class and method             |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|       js | Enhanced JavaScript                                                              |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|    trace | Display the detailed thread stack of specified class and method                  |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|  session | Display current session information                                              |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|     quit | Quit Greys console                                                               |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|  version | Display Greys version                                                            |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|      jvm | Display the target JVM information                                               |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|    reset | Reset all the enhanced classes                                                   |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|      asm | Display class bytecode by asm format                                             |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">| shutdown | Shut down Greys server and exit the console                                      |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|     help | Display Greys Help                                                               |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|      top | Display The Threads Of Top CPU TIME                                              |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br></pre></td></tr></table></figure></p>
+<p> 可以help 具体的工具名查看用法：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"> ga?&gt;help top</span><br><span class="line">+---------+----------------------------------------------------------------------------------+</span><br><span class="line">|   USAGE | -[i:t:d]                                                                         |</span><br><span class="line">|         | Display The Threads Of Top CPU TIME                                              |</span><br><span class="line">+---------+----------------------------------------------------------------------------------+</span><br><span class="line">| OPTIONS |             [i:] | The thread id info                                            |</span><br><span class="line">|         | -----------------+-------------------------------------------------------------- |</span><br><span class="line">|         |             [t:] | The top NUM of thread cost CPU times                          |</span><br><span class="line">|         | -----------------+-------------------------------------------------------------- |</span><br><span class="line">|         |              [d] | Display the thread stack detail                               |</span><br><span class="line">+---------+----------------------------------------------------------------------------------+</span><br><span class="line">| EXAMPLE | top                                                                              |</span><br><span class="line">|         | top -t 5                                                                         |</span><br><span class="line">|         | top -d                                                                           |</span><br><span class="line">+---------+----------------------------------------------------------------------------------+</span><br></pre></td></tr></table></figure>
+<p> 希望可以帮到大家，<br> 向作者致敬！</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/07/22/java-线上调试工具-greys-anatomy-实践初探/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
     <article id="post-应用个别接口无响应问题排查记录" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -965,80 +1075,10 @@ query.append(&quot;fieldName&quot;, pattern);
 
 
   
-    <article id="post-漫谈设计模式---策略模式" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2012/01/09/漫谈设计模式---策略模式/">漫谈设计模式---策略模式</a>
-    </h1>
-  
-
-        
-        <a href="/2012/01/09/漫谈设计模式---策略模式/" class="archive-article-date">
-  	<time datetime="2012-01-09T00:53:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2012-01-09</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>设计模式，我一直把设计模式想象成兵法，精妙的兵法可以结构化的、优雅的组织代码。以一种聪明的方式去实现功能，并且具有极强的可维护性。</p>
-<p>说设计模式应该先从软件设计的思想说起，比如开闭原则，开：对扩展开放；闭：对修改关闭。这就需要什么呢？把不变的部分抽象出来并进行封装。软件设计还有一个原则叫做面向接口编程。接口是什么，这是我第一个想谈的东西，算是我想到所有东西的起点。接口，用书里的话来说就是一个标准，定义好这个标准之后，类库和客户端程序员就可以按照这个标准来进行开发，而不必关心实现的细节。从另一个角度来说，接口也是一个基类，所有实现此接口的细节实现都可以向上转型为这个基类，并为别人所用。下面开始我的“漫谈”，重口味啊，不喜勿进。</p>
-<p>接口—标准也。什么事标准？就拿老丈人定义的标准来说，确切的说，一个适龄待嫁女青年的父亲给自己的女婿定义了一套标准：1、有房。2、有车。3、对自己女儿好。这就是一个接口其实，因为这是一套标准，只有实现了此标准（接口）的人才能成为他的女婿。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> House <span class="title">getHouse</span><span class="params">()</span></span>;  </span><br><span class="line">      <span class="function"><span class="keyword">public</span> Car  <span class="title">getCar</span><span class="params">()</span></span>;  </span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">takeCareOfGirl</span><span class="params">()</span></span>;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这样，女婿就成为了一个接口，但是女婿不可以被实例化，不能说“他是一个女婿”，但是假如“小明”实现了女婿接口，并成为了老头的女婿，小明就可以向上转型为基类“女婿”，老头的女婿指向的就是小明了。这样有什么用呢？老头可以说，我要一个这样这样的女婿，有这这个女婿之后我可以调用女婿的这样这样的方法。</p>
- <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"> <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FatherInLaw</span></span>&#123;  </span><br><span class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">MarryMyDaughter</span> <span class="params">(SonInLaw sonInLaw)</span></span>&#123;  </span><br><span class="line">     House house = sonInLaw.getHouse();  </span><br><span class="line">     Car car = sonInLaw.getCar();  </span><br><span class="line">     sonInLaw.takeCareOfGirl();  </span><br><span class="line">     ……  </span><br><span class="line">     &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>可以看到FatherInLaw的嫁女儿的方法（marryMyDaughter）里必须要求传入一个女婿（SonInLaw）类，因为嫁女儿必须调用女婿的获得房子，获得小汽车，照顾女孩儿三个方法。这里岳父是不关心女婿其他的，只关心他是实现了那个女婿接口，也就是说可以向上转型为女婿。这也是面向对象设计的一个原则：面向接口编程。那么小明如果实现了接口，怎么去娶老头的女儿呢？<br>小明类：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Xiaoming</span> <span class="keyword">implements</span> <span class="title">SonInLaw</span></span>&#123;  </span><br><span class="line">   <span class="keyword">private</span> Car car;  </span><br><span class="line">   <span class="function"><span class="keyword">public</span> Car <span class="title">getCar</span><span class="params">()</span></span>&#123;  </span><br><span class="line">        <span class="keyword">return</span> car;  </span><br><span class="line">   &#125;  </span><br><span class="line">   <span class="keyword">private</span> House house;  </span><br><span class="line">   <span class="function"><span class="keyword">public</span> House <span class="title">getHouse</span><span class="params">()</span></span>&#123;  </span><br><span class="line">        <span class="keyword">return</span> house;  </span><br><span class="line">   &#125;  </span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">tackCareOfGirl</span><span class="params">()</span></span>&#123;  </span><br><span class="line">        System.out.println(<span class="string">"照顾女孩"</span>);  </span><br><span class="line">   &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>下面是测试类：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestSon</span></span>&#123;<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;  </span><br><span class="line">       FatherInLaw fatherInLaw = <span class="keyword">new</span> FatherInLaw();  </span><br><span class="line">       fatherInLaw.marryMyDaughter(<span class="keyword">new</span> Xiaoming());  </span><br><span class="line">   &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>小明类就是一个实现了女婿接口的类，换句非程序的话说就是一个达到了老头嫁女儿标准的人。在测试类里，有一个岳父对象被初始化，之后调用此对象的嫁女儿方法，此方法需要传入一个实现了女婿接口的类，我们把小明穿进去，老头就成功的把女儿嫁出去了。</p>
-<p>例子就说完整了。里边利用接口，使岳父不必关心女婿的细节实现，只是定义一个接口，实现我的接口就可以了。就是OO中的面向接口编程。并且这个例子里还有一个设计模式—策略模式。</p>
-<p>策略模式定义了一系列的算法，并将每一个算法封装起来，而且使它们还可以相互替换。策略模式让算法独立于使用它的客户而独立变化—-百度百科。</p>
-<p> 这里的小明其实就是算法族中的一个，不仅可以有小明，还可以有小刚、小强、小白……只要他们实现了女婿接口，就可以传给岳父的嫁女儿方法。岳父是不关心具体的实现的（他不关心你是小强还是蟑螂），他只关心你是否实现了女婿接口。</p>
-<p>再回归文章开头说的原则：开闭原则，老头嫁女儿方法是不变的：有房有车疼女儿。女婿是可以变的–小明、小刚和小强，not at all。这里正是抽象并封装了不变的部分：嫁女儿方法。开放了扩展部分—各种女婿。</p>
-<p>好了，今天就说道这吧。下次我准备写代理模式和适配器模式。小强们是怎样实现女婿接口的—拼爹，拼爹就是代理啊适配器啊，其实是小强他爹实现了女婿方法，小强不过是一个适配器罢了。哈哈~~</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">设计模式</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2012/01/09/漫谈设计模式---策略模式/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
+    <nav id="page-nav">
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+    </nav>
   
 
 
@@ -1131,19 +1171,19 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">idea,golang,plugin,webstorm,JetBrains</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">chrome 302 canceled</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
+                <a href="javascript:void(0)" class="js-tag color3">idea,golang,plugin,webstorm,JetBrains</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">读书笔记</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
               </li>
             
             <div class="clearfix"></div>

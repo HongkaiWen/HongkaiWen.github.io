@@ -6,17 +6,27 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://hongkaiwen.github.io">
-  <title>Archives: 2017/6 | Kuzan</title>
+  <title>java 线上调试工具 greys-anatomy 实践初探 | Kuzan</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="blog or something else">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Kuzan">
-<meta property="og:url" content="http://hongkaiwen.github.io/archives/2017/06/index.html">
+  <meta name="description" content="java 线上调试工具 greys-anatomy 实践初探
+有这样一种场景，跑在线上环境的jvm进程发生了错误，错误日志无法清晰的定位问题，或因为日志不够详尽或因为异常被吃掉没有完整的堆栈信息，一般做法是修改代码重新发布实验性的去打印更多的信息，又要重新发布程序。或者在本地试图去重现这个问题通过ide工具进行debug调试。总之这是一个比较尴尬的情况，添加过日志后还面临着两个问题：
+
+日志添加的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java 线上调试工具 greys-anatomy 实践初探">
+<meta property="og:url" content="http://hongkaiwen.github.io/2017/07/22/java-线上调试工具-greys-anatomy-实践初探/index.html">
 <meta property="og:site_name" content="Kuzan">
-<meta property="og:description" content="blog or something else">
+<meta property="og:description" content="java 线上调试工具 greys-anatomy 实践初探
+有这样一种场景，跑在线上环境的jvm进程发生了错误，错误日志无法清晰的定位问题，或因为日志不够详尽或因为异常被吃掉没有完整的堆栈信息，一般做法是修改代码重新发布实验性的去打印更多的信息，又要重新发布程序。或者在本地试图去重现这个问题通过ide工具进行debug调试。总之这是一个比较尴尬的情况，添加过日志后还面临着两个问题：
+
+日志添加的">
+<meta property="og:updated_time" content="2017-07-22T15:12:54.587Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Kuzan">
-<meta name="twitter:description" content="blog or something else">
+<meta name="twitter:title" content="java 线上调试工具 greys-anatomy 实践初探">
+<meta name="twitter:description" content="java 线上调试工具 greys-anatomy 实践初探
+有这样一种场景，跑在线上环境的jvm进程发生了错误，错误日志无法清晰的定位问题，或因为日志不够详尽或因为异常被吃掉没有完整的堆栈信息，一般做法是修改代码重新发布实验性的去打印更多的信息，又要重新发布程序。或者在本地试图去重现这个问题通过ide工具进行debug调试。总之这是一个比较尴尬的情况，添加过日志后还面临着两个问题：
+
+日志添加的">
   
     <link rel="alternative" href="/atom.xml" title="Kuzan" type="application/atom+xml">
   
@@ -142,114 +152,217 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-java-线上调试工具-greys-anatomy-实践初探" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      java 线上调试工具 greys-anatomy 实践初探
+    </h1>
+  
+
+        
+        <a href="/2017/07/22/java-线上调试工具-greys-anatomy-实践初探/" class="archive-article-date">
+  	<time datetime="2017-07-22T15:12:26.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-22</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="java-线上调试工具-greys-anatomy-实践初探"><a href="#java-线上调试工具-greys-anatomy-实践初探" class="headerlink" title="java 线上调试工具 greys-anatomy 实践初探"></a>java 线上调试工具 greys-anatomy 实践初探</h1><hr>
+<p>有这样一种场景，跑在线上环境的jvm进程发生了错误，错误日志无法清晰的定位问题，或因为日志不够详尽或因为异常被吃掉没有完整的堆栈信息，一般做法是修改代码重新发布实验性的去打印更多的信息，又要重新发布程序。或者在本地试图去重现这个问题通过ide工具进行debug调试。总之这是一个比较尴尬的情况，添加过日志后还面临着两个问题：</p>
+<ul>
+<li>日志添加的不全还要添加再次添加日志</li>
+<li>查到了问题，还要去掉日志代码重新发布程序</li>
+</ul>
+<p>下面介绍一个线上jvm进程调试的工具，可以说是一个神器，<a href="https://github.com/oldmanpushcart/greys-anatomy" target="_blank" rel="external">greys-anatomy</a></p>
+<p>细节（安装、使用、原理）可以阅读github上面的文档，本文旨在根据一个简单的场景让大家快速上手这个工具，至于更多更详细的功能，还需要去官文学习。</p>
+<h3 id="虚拟场景"><a href="#虚拟场景" class="headerlink" title="虚拟场景"></a>虚拟场景</h3><p>周末老板要紧急上线一个系统，经过周六一天的紧急加班（写bug），终于按时提交测试。<br>源码提交在github，<a href="https://github.com/HongkaiWen/web-play" target="_blank" rel="external">codereview</a></p>
+<p>当然，没有经过各位大神review，我已经把系统发布到我的测试环境。</p>
+<p>测试人员花了1分钟对所有功能功能进行了详细的测试，系统仅有的两个功能全部测试不通过：</p>
+<table>
+<thead>
+<tr>
+<th>bug num</th>
+<th>功能</th>
+<th>功能入口</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>查看系统版本</td>
+<td>/system/version</td>
+<td>页面提示 system error</td>
+</tr>
+<tr>
+<td>2</td>
+<td>校验余额是否不足</td>
+<td>/low/balance/check?userId=399</td>
+<td>页面提示系统500错误 </td>
+</tr>
+</tbody>
+</table>
+<p>自己写的bug跪着也要解决啊…</p>
+<h3 id="bug-1"><a href="#bug-1" class="headerlink" title="bug 1"></a>bug 1</h3><p>去线上系统重现问题，果然提示system error，看日志吧，日志输出如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2017-07-22 10:36:47.564 ERROR 2988 --- [nio-8080-exec-2] c.g.h.w.controller.IndexController       : system error</span><br></pre></td></tr></table></figure></p>
+<p>没有任何堆栈信息，查看代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">systemVersion</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">try</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> playService.systemVersion();</span><br><span class="line">    &#125;<span class="keyword">catch</span>(Exception e)&#123;</span><br><span class="line">        logger.error(<span class="string">"system error"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"system error"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这段代码写的很有水平，吃异常并不一定是不正确的做法，但是日志中直接把堆栈信息丢掉一般一定是在给自己挖坑。日志正常的打印方法应该是这样的：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">logger.error(<span class="string">"system error"</span>, e);</span><br></pre></td></tr></table></figure></p>
+<p>现在service层发生的异常堆栈信息全部丢掉了，常规做法一般是这样的：<br>修改日志代码 -&gt; 重新发布 -&gt; 重现错误 -&gt; 定位问题 -&gt; 解决问题</p>
+<p>现在借助<a href="https://github.com/oldmanpushcart/greys-anatomy" target="_blank" rel="external">greys-anatomy</a>就可以直接在线上定位问题，查看堆栈信息。</p>
+<p>进入greys工具：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[root@dev greys]# jps</span><br><span class="line">3049 Jps</span><br><span class="line">2988 Bootstrap</span><br><span class="line">[root@dev greys]# ./greys.sh 2988</span><br><span class="line">                                                        _                    </span><br><span class="line">  ____  ____ _____ _   _  ___ _____ _____ ____  _____ _| |_ ___  ____  _   _ </span><br><span class="line"> / _  |/ ___) ___ | | | |/___|_____|____ |  _ \(____ (_   _) _ \|    \| | | |</span><br><span class="line">( (_| | |   | ____| |_| |___ |     / ___ | | | / ___ | | || |_| | | | | |_| |</span><br><span class="line"> \___ |_|   |_____)\__  (___/      \_____|_| |_\_____|  \__)___/|_|_|_|\__  |</span><br><span class="line">(_____|           (____/                                              (____/ </span><br><span class="line">                                              +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">                                              |v|e|r|s|i|o|n|:|1|.|7|.|6|.|4|</span><br><span class="line">                                              +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">ga?&gt;</span><br><span class="line">ga?&gt;</span><br></pre></td></tr></table></figure></p>
+<p>这里使用watch （Display the details of specified class and method）工具来分析问题，可以通过help watch来查看具体使用方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">ga?&gt;help watch</span><br><span class="line">+---------+----------------------------------------------------------------------------------+</span><br><span class="line">|   USAGE | -[bfesx:En:] class-pattern method-pattern express condition-express              |</span><br><span class="line">|         | Display the details of specified class and method                                |</span><br><span class="line">+---------+----------------------------------------------------------------------------------+</span><br><span class="line">| OPTIONS |              [b] | Watch before invocation                                       |</span><br><span class="line">|         | -----------------+-------------------------------------------------------------- |</span><br><span class="line">|         |              [f] | Watch after invocation                                        |</span><br><span class="line">|         | -----------------+-------------------------------------------------------------- |</span><br><span class="line">|         |              [e] | Watch after throw exception                                   |</span><br><span class="line">|         | -----------------+-------------------------------------------------------------- |</span><br><span class="line">|         |              [s] | Watch after successful invocation                             |</span><br><span class="line">|         | -----------------+-------------------------------------------------------------- |</span><br><span class="line">|         |             [x:] | Expand level of object (0 by default)                         |</span><br><span class="line">|         | -----------------+-------------------------------------------------------------- |</span><br><span class="line">|         |              [E] | Enable regular expression to match (wildcard matching by def  |</span><br><span class="line">|         |                  | ault)                                                         |</span><br><span class="line">|         | -----------------+-------------------------------------------------------------- |</span><br><span class="line">|         |             [n:] | Threshold of execution times                                  |</span><br><span class="line">……</span><br></pre></td></tr></table></figure>
+<p>这里只截取了片段，此处异常被吃掉，我需要查下抛出异常的方法所抛的异常信息是什么，最好是能把堆栈打出来。<br>此处异常是service层跑出来的，就watch下service （playService.systemVersion()）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">watch -e *PlayService* systemVersion throwExp.printStackTrace()</span><br></pre></td></tr></table></figure></p>
+<p>简单解释下：</p>
+<ul>
+<li>-e表示：Watch after throw exception</li>
+<li>*PlayService* 是通配匹配类名，也可以写具体类名</li>
+<li>systemVersion 是方法名</li>
+<li>throwExp 是工具定义的参数名，表示抛出的异常对象的</li>
+</ul>
+<p>执行完上面这句之后，再次重现问题，查看应用日志中输出了详细的堆栈信息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">java.lang.RuntimeException: ssss</span><br><span class="line">	at com.github.hongkaiwen.webplay.service.PlayService.systemVersion(PlayService.java:12)</span><br><span class="line">	at com.github.hongkaiwen.webplay.controller.IndexController.systemVersion(IndexController.java:28)</span><br><span class="line">	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)</span><br><span class="line">	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)</span><br><span class="line">	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)</span><br><span class="line">	at java.lang.reflect.Method.invoke(Method.java:498)</span><br><span class="line">	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:205)</span><br><span class="line">……</span><br></pre></td></tr></table></figure></p>
+<h3 id="bug-2"><a href="#bug-2" class="headerlink" title="bug 2"></a>bug 2</h3><p>这个接口调用第三方接口（假设我写的service层方法就是一个第三方的http接口）校验余额是否不足，预期的第三方接口返回的是一个json字符串。<br>在线上系统重现问题，系统日志中内容输出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">com.alibaba.fastjson.JSONException: syntax error, pos 1</span><br><span class="line">	at com.alibaba.fastjson.parser.DefaultJSONParser.parse(DefaultJSONParser.java:1295) ~[fastjson-1.2.7.jar:na]</span><br><span class="line">	at com.alibaba.fastjson.parser.DefaultJSONParser.parse(DefaultJSONParser.java:1205) ~[fastjson-1.2.7.jar:na]</span><br><span class="line">	……</span><br></pre></td></tr></table></figure></p>
+<p>很明显，第三方接口返回的不是一个json，但和第三方扯比较麻烦，我们需要知道第三方到底返回了什么东西。<br>使用watch工具，查看第三方接口方法的返回值：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">watch -f *PlayService* balanceQuery  returnObj</span><br></pre></td></tr></table></figure></p>
+<p>重现问题，然后查看控制台输出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;&lt;body&gt;500 Internal Error: xxxxx&lt;/body&gt;&lt;/html&gt;</span><br></pre></td></tr></table></figure></p>
+<p>很明显第三方系统除了问题了。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>上面这个例子是我故意写的俩bug，但类似场景我相信总有人遇到过，没有这个工具也能解决，但有了这个工具，我们可以更快捷的定位问题，这种好东西一定要放到自的工具箱。</p>
+<h3 id="延伸"><a href="#延伸" class="headerlink" title="延伸"></a>延伸</h3><p>这个工具不只是我介绍的这一点功能，大家可以花点时间去简单研究下（半个小时就够了），看看有哪些功能，怎么安装，遇到问题的时候也许用得到。</p>
+<p>help 查看所有工具：<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"> ga?&gt;help</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|       sc | Search all the classes loaded by JVM                                             |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|       sm | Search the method of classes loaded by JVM                                       |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|  monitor | Monitor the execution of specified Class and its method                          |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|    watch | Display the details of specified class and method                                |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|       tt | Time Tunnel                                                                      |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|    stack | Display the stack trace of specified class and method                            |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|   ptrace | Display the detailed thread path stack of specified class and method             |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|       js | Enhanced JavaScript                                                              |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|    trace | Display the detailed thread stack of specified class and method                  |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|  session | Display current session information                                              |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|     quit | Quit Greys console                                                               |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|  version | Display Greys version                                                            |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|      jvm | Display the target JVM information                                               |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|    reset | Reset all the enhanced classes                                                   |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|      asm | Display class bytecode by asm format                                             |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">| shutdown | Shut down Greys server and exit the console                                      |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|     help | Display Greys Help                                                               |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br><span class="line">|      top | Display The Threads Of Top CPU TIME                                              |</span><br><span class="line">+----------+----------------------------------------------------------------------------------+</span><br></pre></td></tr></table></figure></p>
+<p> 可以help 具体的工具名查看用法：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"> ga?&gt;help top</span><br><span class="line">+---------+----------------------------------------------------------------------------------+</span><br><span class="line">|   USAGE | -[i:t:d]                                                                         |</span><br><span class="line">|         | Display The Threads Of Top CPU TIME                                              |</span><br><span class="line">+---------+----------------------------------------------------------------------------------+</span><br><span class="line">| OPTIONS |             [i:] | The thread id info                                            |</span><br><span class="line">|         | -----------------+-------------------------------------------------------------- |</span><br><span class="line">|         |             [t:] | The top NUM of thread cost CPU times                          |</span><br><span class="line">|         | -----------------+-------------------------------------------------------------- |</span><br><span class="line">|         |              [d] | Display the thread stack detail                               |</span><br><span class="line">+---------+----------------------------------------------------------------------------------+</span><br><span class="line">| EXAMPLE | top                                                                              |</span><br><span class="line">|         | top -t 5                                                                         |</span><br><span class="line">|         | top -d                                                                           |</span><br><span class="line">+---------+----------------------------------------------------------------------------------+</span><br></pre></td></tr></table></figure>
+<p> 希望可以帮到大家，<br> 向作者致敬！</p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/alipay.png">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/06/17/应用个别接口无响应问题排查记录/" class="archive-article-date">
-  	<time datetime="2017-06-17T14:52:58.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-17</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/06/17/应用个别接口无响应问题排查记录/">应用个别接口无响应问题排查记录</a>
-    </h1>
-  
+      
 
-        <div class="article-info info-on-right">
-          
-          
+      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://hongkaiwen.github.io/2017/07/22/java-线上调试工具-greys-anatomy-实践初探/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/06/11/《Java-性能调优》读书笔记-Garbage-First-综述/" class="archive-article-date">
-  	<time datetime="2017-06-11T00:53:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-11</time>
-</a>
-        </div>
-    	 
+<nav id="article-nav">
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/06/11/《Java-性能调优》读书笔记-Garbage-First-综述/">《Java 性能调优》读书笔记 -- Garbage First 综述</a>
-    </h1>
+  
+    <a href="/2017/06/17/应用个别接口无响应问题排查记录/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">应用个别接口无响应问题排查记录</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+
+
+
+  
+  
+  
+  <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
+<script>
+  var cloudTieConfig = {
+    url: "http://hongkaiwen.github.io/2017/07/22/java-线上调试工具-greys-anatomy-实践初探/", 
+    sourceId: "java-线上调试工具-greys-anatomy-实践初探",
+    productKey: "true",
+    target: "cloud-tie-wrapper"
+  };
+</script>
+<script src="//img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/06/07/hrome network canceled 问题排查记录/" class="archive-article-date">
-  	<time datetime="2017-06-07T14:27:19.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-07</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/06/07/hrome network canceled 问题排查记录/">chrome network canceled 问题排查记录</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">chrome 302 canceled</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
-  
-    </div></section>
-  
-
-    
 
 
           </div>
@@ -272,8 +385,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
