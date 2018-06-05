@@ -136,6 +136,156 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-ReactiveX" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/06/05/ReactiveX/">ReactiveX</a>
+    </h1>
+  
+
+        
+        <a href="/2018/06/05/ReactiveX/" class="archive-article-date">
+  	<time datetime="2018-06-05T14:40:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-05</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>（翻译 <a href="http://reactivex.io/intro.html" target="_blank" rel="noopener">ReactiveX 官网</a>）*</p>
+<p><a href="http://reactivex.io/intro.html" target="_blank" rel="noopener">ReactiveX</a> 是通过观察者序列实现的“异步”和“基于事件”的开发范式的类库。</p>
+<p>基于<a href="http://en.wikipedia.org/wiki/Observer_pattern" target="_blank" rel="noopener">观察者模式</a>，支持一系列的“数据” and/or “事件” 并且基于此可以添加一系列的“操作”；基于此类抽象可以实现：更少的线程、异步、线程安全、并发的数据结构、NIO。</p>
+<p>观察者模式提供了一种完美的解决方案，来填补多项异步序列间的异步序列接入。</p>
+<p>（翻译不出来：Observables fill the gap by being the ideal way to access asynchronous sequences of multiple items）</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>single items</th>
+<th>multiple items</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>synchronous</td>
+<td>T getData()</td>
+<td>Iterable<t> getData()</t></td>
+</tr>
+<tr>
+<td>asynchronous</td>
+<td>Future<t> getData()</t></td>
+<td>Observable<t> getData()</t></td>
+</tr>
+</tbody>
+</table>
+<p>有时候这个被称为“<a href="https://en.wikipedia.org/wiki/Functional_reactive_programming" target="_blank" rel="noopener">函数式响应式编程</a>”，但是这是不合适的叫法。ReactiveX也许是函数式的，也许是响应式的，但是“函数式响应式编程”是另一码事情。一个主要的不同点是：函数式响应式编程基于“值”来操作，“值”是随着时间不停的变化的。而ReactiveX基于“非连续”的“值”， 值是随着时间被发出（emitted）。（参考： <a href="https://github.com/conal/essence-and-origins-of-frp" target="_blank" rel="noopener">Conal Elliott’s work for more-precise information on functional reactive programming</a>）</p>
+<h2 id="为什么使用观察者模式"><a href="#为什么使用观察者模式" class="headerlink" title="为什么使用观察者模式"></a>为什么使用观察者模式</h2><p>ReactiveX 使使用者通过定义一个集合来定义一系列的“简单的、可组合的操作”，来处理一系列的异步事件；他使混乱的web回调变得简单，进而使代码更具有可读性，更少的bug。</p>
+<h3 id="可组合"><a href="#可组合" class="headerlink" title="可组合"></a>可组合</h3><p><a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Future.html" target="_blank" rel="noopener">Java Futures</a> 技术是最快捷的方式来实现 <a href="https://gist.github.com/4670979" target="_blank" rel="noopener">a single level of asynchronous execution</a> 但是，当存在嵌套调用场景时futures技术会造成<a href="https://gist.github.com/4671081" target="_blank" rel="noopener">non-trivial complexity</a> 。</p>
+<p>很难<a href="https://gist.github.com/4671081#file-futuresb-java-L163" target="_blank" rel="noopener">使用future完美的组合条件式的异步处理流程</a>（或者说是不可能实现的，因为每一个运行时的请求的延迟是变化的）。这当然<a href="https://www.amazon.com/gp/product/0321349601?ie=UTF8&amp;tag=none0b69&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0321349601" target="_blank" rel="noopener">可以做到</a>， 但是会迅速的变得复杂（进而易错）或者过早的阻塞在<code>Future.get()</code>, 这样会削减异步带来的收益。</p>
+<p>ReactiveX Observables， 在另一方面，倾向于<a href="https://github.com/Netflix/RxJava/wiki/How-To-Use#composition" target="_blank" rel="noopener">组合流程并顺序化异步数据</a>。</p>
+<h3 id="灵活"><a href="#灵活" class="headerlink" title="灵活"></a>灵活</h3><p>ReactiveX Observables 不仅仅支持emission单个scalar values（就像futures那样），并且支持一个序列的值甚至无限的流。<code>Observable</code> 是可以处理这些场景的一个抽象。Observable具备迭代器一样的灵活和优雅。</p>
+<p>Observable 是异步的推模型 <a href="http://en.wikipedia.org/wiki/Dual_(category_theory" target="_blank" rel="noopener">“dual”</a>) 对比与同步模式下迭代器的拉模型</p>
+<table>
+<thead>
+<tr>
+<th>event</th>
+<th>Iterable (pull)</th>
+<th>Observable (push)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>retrieve data（查询数据）</td>
+<td>T next()</td>
+<td>onNext(T)</td>
+</tr>
+<tr>
+<td>discover error（发现错误）</td>
+<td>throws <code>Exception</code></td>
+<td>onError(Exception)</td>
+</tr>
+<tr>
+<td>complete（完成）</td>
+<td>!hasNext()</td>
+<td>onCompleted()</td>
+</tr>
+</tbody>
+</table>
+<h3 id="不局限"><a href="#不局限" class="headerlink" title="不局限"></a>不局限</h3><p>（译者注：对于被监听方来说）</p>
+<p>ReactiveX 不倾向于任何特定的并发或异步实现方式。Observable可以通过线程池、event loops、nio、actors（比如akka）实现，或者其他任何实基于你的经验的现方式。调用方把所有的和Observable相关的代码认为是异步的，无论底层的实现是阻塞的或非阻塞的也无论是什么实现方式。</p>
+<p>Observable 如何实现?</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Observable&lt;data&gt; <span class="title">getData</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>does it work synchronously on the same thread as the caller?</li>
+<li>does it work asynchronously on a distinct thread?</li>
+<li>does it divide its work over multiple threads that may return data to the caller in any order?</li>
+<li>does it use an Actor (or multiple Actors) instead of a thread pool?</li>
+<li>does it use NIO with an event-loop to do asynchronous network access?</li>
+<li>does it use an event-loop to separate the work thread from the callback thread?</li>
+</ul>
+<p>从监听者的视角来看，这都无所谓。</p>
+<p>提一点：基于ReactiveX你可以随时改变你的主意，彻底的改变Observable的实现方式，不需要改变调用方的代码。</p>
+<h3 id="回调有自身的问题"><a href="#回调有自身的问题" class="headerlink" title="回调有自身的问题"></a>回调有自身的问题</h3><p><code>回调</code>可以解决过早的阻塞在<code>Future.get()</code>的问题，它原生的高效，因为他们在response ready的时候执行。但是和futures一样，回调比较适用于单层的异步执行，<a href="https://gist.github.com/4677544" target="_blank" rel="noopener">嵌套时会变得不好用</a>。</p>
+<h3 id="ReactiveX有多语言实现"><a href="#ReactiveX有多语言实现" class="headerlink" title="ReactiveX有多语言实现"></a>ReactiveX有多语言实现</h3><p>（吹牛逼的内容不翻译了。）</p>
+<h2 id="响应式编程"><a href="#响应式编程" class="headerlink" title="响应式编程"></a>响应式编程</h2><p>ReactiveX 提供了<a href="http://reactivex.io/documentation/operators.html" target="_blank" rel="noopener">一组操作器</a>，使用者可以过滤、选择、转换、组装、组合Observables。这样就支持了高效的执行和调度。</p>
+<p>可以把Observable当做一个“推”，类比于迭代器的“拉”。作为一个<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/Iterable.html" target="_blank" rel="noopener">迭代器</a>，消费者从生产者拉取值，当前线程会被阻塞直到值到达。相形之下，Observables生产值并把它推送给消费者。这种方式更加灵活，因为值可以同步或异步的到达。</p>
+<p>下面的样例代码，展示迭代器和Observable在高阶函数方面的相似之处：</p>
+<p><strong>Iterable</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">getDataFromLocalMemory()</span><br><span class="line">  .skip(<span class="number">10</span>)</span><br><span class="line">  .take(<span class="number">5</span>)</span><br><span class="line">  .map(&#123; s -&gt; <span class="keyword">return</span> s + <span class="string">" transformed"</span> &#125;)</span><br><span class="line">  .forEach(&#123; println <span class="string">"next =&gt; "</span> + it &#125;)</span><br></pre></td></tr></table></figure>
+<p><strong>Observable</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">getDataFromNetwork()</span><br><span class="line">  .skip(<span class="number">10</span>)</span><br><span class="line">  .take(<span class="number">5</span>)</span><br><span class="line">  .map(&#123; s -&gt; <span class="keyword">return</span> s + <span class="string">" transformed"</span> &#125;)</span><br><span class="line">  .subscribe(&#123; println <span class="string">"onNext =&gt; "</span> + it &#125;)</span><br></pre></td></tr></table></figure>
+<p>Observable 添加了两个遗漏的语义（相对于GOF Observer pattern）：</p>
+<ul>
+<li>生产者通知消费者不再有数据的能力（<code>onCompleted</code> method）</li>
+<li>生产者通知消费之发生错误的能力（<code>onError</code> method）</li>
+</ul>
+<p>基于这些添加项，ReactiveX调和了Iterable 和 Observable 两种模式， 他们唯一的区别是数据流的方向。这非常重要，因为任何可以在Iterable上执行的动作，用户都可以在Observable来做。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/06/05/ReactiveX/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-填坑日记之@Scheduled and RestTemplate" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1166,102 +1316,6 @@ query.append(&quot;fieldName&quot;, pattern);
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2016/03/05/读书笔记-linux-load查看与分析/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-java-并发死锁产生原因与诊断" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/09/03/java-并发死锁产生原因与诊断/">java 并发死锁产生原因与诊断</a>
-    </h1>
-  
-
-        
-        <a href="/2015/09/03/java-并发死锁产生原因与诊断/" class="archive-article-date">
-  	<time datetime="2015-09-03T14:53:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2015-09-03</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><strong>死锁的产生原因</strong></p>
-<p>并发死锁产生的原因一般是由于加锁顺序不一致引起的，假设一个事物需要获得连续获得两个资源的锁，如果执行事物的两个线程获得这两个锁的顺序不一致，就有可能产生死锁。</p>
-<p>下面是我画的一个简单的说明图：<br><img src="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/java%20%E5%B9%B6%E5%8F%91%E6%AD%BB%E9%94%81%E4%BA%A7%E7%94%9F%E5%8E%9F%E5%9B%A0%E4%B8%8E%E8%AF%8A%E6%96%AD/image1.png" alt="enter description here"></p>
-<p>在Dead lock point， 第一个线程拥有A锁，想获得B锁， 第二个线程拥有B锁，想获得A锁，两个线程相互拥有另一个线程所等待的资源。<br>造成这种局面的原因就是两个线程加锁的顺序不一样，一旦程序中产生死锁，唯一能做的就是杀死进程，重启应用。</p>
-<p><strong>用java代码实现死锁</strong></p>
-<p>运行以下代码，程序会一直运行，不退出。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestDeadLock</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Lock lockA = <span class="keyword">new</span> ReentrantLock();  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Lock lockB = <span class="keyword">new</span> ReentrantLock();  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span></span>&#123;  </span><br><span class="line">        <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;  </span><br><span class="line">            <span class="meta">@Override</span>  </span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">                <span class="keyword">try</span>&#123;  </span><br><span class="line">                    lockA.lock();  </span><br><span class="line">                    TimeUnit.SECONDS.sleep(<span class="number">2</span>);  </span><br><span class="line">                    <span class="keyword">try</span>&#123;  </span><br><span class="line">                        lockB.lock();  </span><br><span class="line">                    &#125;<span class="keyword">finally</span> &#123;  </span><br><span class="line">                        lockB.unlock();  </span><br><span class="line">                    &#125;  </span><br><span class="line">                &#125;<span class="keyword">catch</span> (InterruptedException e) &#123;  </span><br><span class="line">  </span><br><span class="line">                &#125;<span class="keyword">finally</span> &#123;  </span><br><span class="line">                    lockA.unlock();  </span><br><span class="line">                &#125;  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;).start();  </span><br><span class="line">        <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;  </span><br><span class="line">            <span class="meta">@Override</span>  </span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">                <span class="keyword">try</span>&#123;  </span><br><span class="line">                    lockB.lock();  </span><br><span class="line">                    TimeUnit.SECONDS.sleep(<span class="number">2</span>);  </span><br><span class="line">                    <span class="keyword">try</span>&#123;  </span><br><span class="line">                        lockA.lock();  </span><br><span class="line">                    &#125;<span class="keyword">finally</span> &#123;  </span><br><span class="line">                        lockA.unlock();  </span><br><span class="line">                    &#125;  </span><br><span class="line">                &#125;<span class="keyword">catch</span> (InterruptedException e) &#123;  </span><br><span class="line">  </span><br><span class="line">                &#125;<span class="keyword">finally</span> &#123;  </span><br><span class="line">                    lockB.unlock();  </span><br><span class="line">                &#125;  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;).start();  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p> 代码链接： <a href="https://github.com/HongkaiWen/study/blob/master/src/main/java/concurrent/deadlock/TestDeadLock.java" target="_blank" rel="noopener">https://github.com/HongkaiWen/study/blob/master/src/main/java/concurrent/deadlock/TestDeadLock.java</a></p>
-<p><strong>程序产生死锁后的排查</strong></p>
-<p>产生死锁的现象就是程序停在那里，不会对调用者产生反馈。以我上边写的例子来说，就是程序无法退出。<br>下面以我这个例子来说明如何确定程序是因为死锁才停在那里。（这个程序是我故意写的死锁，一般的应用中是没有人会故意写死锁的，所以程序发生阻塞时，需要定位问题的原因）</p>
-<p><strong>windows平台：</strong></p>
-<p>我在我本机windows平台下运行我的死锁程序， 程序停在那里不动。<br>这时我打开jvisualvm.exe （jdk的bin目录下），这是一个图形界面程序，截图如下：</p>
-<p><img src="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/java%20%E5%B9%B6%E5%8F%91%E6%AD%BB%E9%94%81%E4%BA%A7%E7%94%9F%E5%8E%9F%E5%9B%A0%E4%B8%8E%E8%AF%8A%E6%96%AD/image2.png" alt="enter description here"></p>
-<p>关于此界面的说明：<br>首先左侧是一个JVM的进程列表，在列表中我可以找到我的应用的进程，单击目标进程即可查看进程详细信息。<br>右边很明显了，红色字体提示检测到死锁，点击线程Dump就可以查看进一步的详细信息了。<br>下面是一条一条的时间线是所有线程的状态了，Thread-1 和 Thread-2是我们的用户线程，黄色代表等待状态。</p>
-<p>下面是线程dump的信息，信息比较多，我贴出关键部分：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Found one Java-level deadlock:  </span><br><span class="line">=============================  </span><br><span class="line">&quot;Thread-1&quot;:  </span><br><span class="line">  waiting for ownable synchronizer 0x09df1d10, (a java.util.concurrent.locks.ReentrantLock$NonfairSync),  </span><br><span class="line">  which is held by &quot;Thread-0&quot;  </span><br><span class="line">&quot;Thread-0&quot;:  </span><br><span class="line">  waiting for ownable synchronizer 0x09df1ef8, (a java.util.concurrent.locks.ReentrantLock$NonfairSync),  </span><br><span class="line">  which is held by &quot;Thread-1&quot;</span><br></pre></td></tr></table></figure>
-<p>意思就是线程1等待线程2持有的资源，线程2等待线程1持有的资源，再下面的信息可以定位到具体代码的哪一行：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&quot;Thread-1&quot;:  </span><br><span class="line">    at sun.misc.Unsafe.park(Native Method)  </span><br><span class="line">    - parking to wait for  &lt;0x09df1d10&gt; (a java.util.concurrent.locks.ReentrantLock$NonfairSync)  </span><br><span class="line">    at java.util.concurrent.locks.LockSupport.park(LockSupport.java:175)  </span><br><span class="line">    at java.util.concurrent.locks.AbstractQueuedSynchronizer.parkAndCheckInterrupt(AbstractQueuedSynchronizer.java:836)  </span><br><span class="line">    at java.util.concurrent.locks.AbstractQueuedSynchronizer.acquireQueued(AbstractQueuedSynchronizer.java:870)  </span><br><span class="line">    at java.util.concurrent.locks.AbstractQueuedSynchronizer.acquire(AbstractQueuedSynchronizer.java:1199)  </span><br><span class="line">    at java.util.concurrent.locks.ReentrantLock$NonfairSync.lock(ReentrantLock.java:209)  </span><br><span class="line">    at java.util.concurrent.locks.ReentrantLock.lock(ReentrantLock.java:285)  </span><br><span class="line">    at concurrent.TestDeadLock$2.run(TestDeadLock.java:40)  </span><br><span class="line">    at java.lang.Thread.run(Thread.java:745)  </span><br><span class="line">&quot;Thread-0&quot;:  </span><br><span class="line">    at sun.misc.Unsafe.park(Native Method)  </span><br><span class="line">    - parking to wait for  &lt;0x09df1ef8&gt; (a java.util.concurrent.locks.ReentrantLock$NonfairSync)  </span><br><span class="line">    at java.util.concurrent.locks.LockSupport.park(LockSupport.java:175)  </span><br><span class="line">    at java.util.concurrent.locks.AbstractQueuedSynchronizer.parkAndCheckInterrupt(AbstractQueuedSynchronizer.java:836)  </span><br><span class="line">    at java.util.concurrent.locks.AbstractQueuedSynchronizer.acquireQueued(AbstractQueuedSynchronizer.java:870)  </span><br><span class="line">    at java.util.concurrent.locks.AbstractQueuedSynchronizer.acquire(AbstractQueuedSynchronizer.java:1199)  </span><br><span class="line">    at java.util.concurrent.locks.ReentrantLock$NonfairSync.lock(ReentrantLock.java:209)  </span><br><span class="line">    at java.util.concurrent.locks.ReentrantLock.lock(ReentrantLock.java:285)  </span><br><span class="line">    at concurrent.TestDeadLock$1.run(TestDeadLock.java:22)  </span><br><span class="line">    at java.lang.Thread.run(Thread.java:745)</span><br></pre></td></tr></table></figure>
-<p><strong>linux平台：</strong></p>
-<p> 一般linux平台不太方便用图形界面的工具，而一般java的程序都是部署在linux平台上的，这种环境程序发生阻塞时要怎么办呢，和windows思路是一样的，只不过是工具不同而已。<br>首先我在linux上运行我的java程序，程序如期卡住。</p>
-<p><img src="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/java%20%E5%B9%B6%E5%8F%91%E6%AD%BB%E9%94%81%E4%BA%A7%E7%94%9F%E5%8E%9F%E5%9B%A0%E4%B8%8E%E8%AF%8A%E6%96%AD/image3.png" alt="enter description here"></p>
-<p>这时，我运行进程查看命令，找到我的进程：</p>
-<p><img src="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/java%20%E5%B9%B6%E5%8F%91%E6%AD%BB%E9%94%81%E4%BA%A7%E7%94%9F%E5%8E%9F%E5%9B%A0%E4%B8%8E%E8%AF%8A%E6%96%AD/image4.png" alt="enter description here"></p>
-<p>此时可以通过jstack命令导出jvm的栈调用信息：</p>
-<p><img src="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/java%20%E5%B9%B6%E5%8F%91%E6%AD%BB%E9%94%81%E4%BA%A7%E7%94%9F%E5%8E%9F%E5%9B%A0%E4%B8%8E%E8%AF%8A%E6%96%AD/image5.png" alt="enter description here"></p>
-<p>下面是stack.txt中导出的信息（部分）：<br> 找到了和之前windows一样的信息。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">Found one Java-level deadlock:  </span><br><span class="line">=============================  </span><br><span class="line">&quot;Thread-1&quot;:  </span><br><span class="line">  waiting for ownable synchronizer 0x00000000d6c68848, (a java.util.concurrent.locks.ReentrantLock$NonfairSync),  </span><br><span class="line">  which is held by &quot;Thread-0&quot;  </span><br><span class="line">&quot;Thread-0&quot;:  </span><br><span class="line">  waiting for ownable synchronizer 0x00000000d6c68878, (a java.util.concurrent.locks.ReentrantLock$NonfairSync),  </span><br><span class="line">  which is held by &quot;Thread-1&quot;  </span><br><span class="line">  </span><br><span class="line">Java stack information for the threads listed above:  </span><br><span class="line">===================================================  </span><br><span class="line">&quot;Thread-1&quot;:  </span><br><span class="line">    at sun.misc.Unsafe.park(Native Method)  </span><br><span class="line">    - parking to wait for  &lt;0x00000000d6c68848&gt; (a java.util.concurrent.locks.ReentrantLock$NonfairSync)  </span><br><span class="line">    at java.util.concurrent.locks.LockSupport.park(LockSupport.java:186)  </span><br><span class="line">    at java.util.concurrent.locks.AbstractQueuedSynchronizer.parkAndCheckInterrupt(AbstractQueuedSynchronizer.java:834)  </span><br><span class="line">    at java.util.concurrent.locks.AbstractQueuedSynchronizer.acquireQueued(AbstractQueuedSynchronizer.java:867)  </span><br><span class="line">    at java.util.concurrent.locks.AbstractQueuedSynchronizer.acquire(AbstractQueuedSynchronizer.java:1197)  </span><br><span class="line">    at java.util.concurrent.locks.ReentrantLock$NonfairSync.lock(ReentrantLock.java:214)  </span><br><span class="line">    at java.util.concurrent.locks.ReentrantLock.lock(ReentrantLock.java:290)  </span><br><span class="line">    at concurrent.deadlock.TestDeadLock$2.run(TestDeadLock.java:40)  </span><br><span class="line">    at java.lang.Thread.run(Thread.java:745)  </span><br><span class="line">&quot;Thread-0&quot;:  </span><br><span class="line">    at sun.misc.Unsafe.park(Native Method)  </span><br><span class="line">    - parking to wait for  &lt;0x00000000d6c68878&gt; (a java.util.concurrent.locks.ReentrantLock$NonfairSync)  </span><br><span class="line">    at java.util.concurrent.locks.LockSupport.park(LockSupport.java:186)  </span><br><span class="line">    at java.util.concurrent.locks.AbstractQueuedSynchronizer.parkAndCheckInterrupt(AbstractQueuedSynchronizer.java:834)  </span><br><span class="line">    at java.util.concurrent.locks.AbstractQueuedSynchronizer.acquireQueued(AbstractQueuedSynchronizer.java:867)  </span><br><span class="line">    at java.util.concurrent.locks.AbstractQueuedSynchronizer.acquire(AbstractQueuedSynchronizer.java:1197)  </span><br><span class="line">    at java.util.concurrent.locks.ReentrantLock$NonfairSync.lock(ReentrantLock.java:214)  </span><br><span class="line">    at java.util.concurrent.locks.ReentrantLock.lock(ReentrantLock.java:290)  </span><br><span class="line">    at concurrent.deadlock.TestDeadLock$1.run(TestDeadLock.java:22)  </span><br><span class="line">    at java.lang.Thread.run(Thread.java:745)  </span><br><span class="line">  </span><br><span class="line">Found 1 deadlock.</span><br></pre></td></tr></table></figure>
-<p><strong>死锁程序的预防与处理</strong></p>
-<p>避免 死锁的方法就是不要写 顺序不一致加锁 的代码<br> 如果 必须要写顺序不一致的加锁的代码，可以采用 trylock 方法，避免程序一直等待。<br> 预防 死锁可以采用finddebug插件去扫描代码发现死锁。<br> 处理 死锁，如果运行中的程序已经发生死锁，据我所知没有别的办法，只能停止程序，代价非常大，所以要尽量避免死锁。</p>
-<p>关于死锁的避免与预防有时间我再整理一下分享一下我的心得。<br>关于并发编程，想要写出正确可靠高性能的程序实在比较难，我知道的也是一些皮毛，欢迎大家批评指正，互相学习。</p>
-<p>—————————–分割线——————————</p>
-<p>上面是差不多两年前写的文章，如果从死锁的角度出发去学习死锁产生的原因以及分析方法可以按照上面的过程来了解，当然死锁产生的原因也不仅上面一种，还有资源死锁等。</p>
-<p>如果从另外一个角度出发，解决问题的工具箱，通过上面的文章，我们介绍了一个工具<strong>jstack</strong>，他可以打印出程序运行中的调用栈信息，在发生程序卡住，响应缓慢等问题时这也是分析问题原因的一个工具。</p>
-<p>再之前的工作中遇见过一段很简单的代码，执行时间超长，当时分析不出原因，正是通过jstack来分析出的，定位到一个正则性能低下。</p>
-<p>总之，jvm卡在那里不动了，日志也没有错误输出，jstack一把，可以定位程序死在哪一行。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2015/09/03/java-并发死锁产生原因与诊断/">展开全文 >></a>
         </p>
       
 

@@ -6,15 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://hongkaiwen.github.io">
-  <title>Archives: 2018 | Kuzan</title>
+  <title>ReactiveX | Kuzan</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Kuzan">
-<meta property="og:url" content="https://hongkaiwen.github.io/archives/2018/index.html">
+  <meta name="description" content="（翻译 ReactiveX 官网）* ReactiveX 是通过观察者序列实现的“异步”和“基于事件”的开发范式的类库。 基于观察者模式，支持一系列的“数据” and/or “事件” 并且基于此可以添加一系列的“操作”；基于此类抽象可以实现：更少的线程、异步、线程安全、并发的数据结构、NIO。 观察者模式提供了一种完美的解决方案，来填补多项异步序列间的异步序列接入。 （翻译不出来：Observab">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ReactiveX">
+<meta property="og:url" content="https://hongkaiwen.github.io/2018/06/05/ReactiveX/index.html">
 <meta property="og:site_name" content="Kuzan">
+<meta property="og:description" content="（翻译 ReactiveX 官网）* ReactiveX 是通过观察者序列实现的“异步”和“基于事件”的开发范式的类库。 基于观察者模式，支持一系列的“数据” and/or “事件” 并且基于此可以添加一系列的“操作”；基于此类抽象可以实现：更少的线程、异步、线程安全、并发的数据结构、NIO。 观察者模式提供了一种完美的解决方案，来填补多项异步序列间的异步序列接入。 （翻译不出来：Observab">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-06-05T14:43:32.977Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Kuzan">
+<meta name="twitter:title" content="ReactiveX">
+<meta name="twitter:description" content="（翻译 ReactiveX 官网）* ReactiveX 是通过观察者序列实现的“异步”和“基于事件”的开发范式的类库。 基于观察者模式，支持一系列的“数据” and/or “事件” 并且基于此可以添加一系列的“操作”；基于此类抽象可以实现：更少的线程、异步、线程安全、并发的数据结构、NIO。 观察者模式提供了一种完美的解决方案，来填补多项异步序列间的异步序列接入。 （翻译不出来：Observab">
   
   
     <link rel="icon" href="/favicon.png">
@@ -134,87 +138,261 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
+            <article id="post-ReactiveX" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
   
+    <h1 class="article-title" itemprop="name">
+      ReactiveX
+    </h1>
   
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/06/05/ReactiveX/" class="archive-article-date">
+
+        
+        <a href="/2018/06/05/ReactiveX/" class="archive-article-date">
   	<time datetime="2018-06-05T14:40:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-05</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/06/05/ReactiveX/">ReactiveX</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>（翻译 <a href="http://reactivex.io/intro.html" target="_blank" rel="noopener">ReactiveX 官网</a>）*</p>
+<p><a href="http://reactivex.io/intro.html" target="_blank" rel="noopener">ReactiveX</a> 是通过观察者序列实现的“异步”和“基于事件”的开发范式的类库。</p>
+<p>基于<a href="http://en.wikipedia.org/wiki/Observer_pattern" target="_blank" rel="noopener">观察者模式</a>，支持一系列的“数据” and/or “事件” 并且基于此可以添加一系列的“操作”；基于此类抽象可以实现：更少的线程、异步、线程安全、并发的数据结构、NIO。</p>
+<p>观察者模式提供了一种完美的解决方案，来填补多项异步序列间的异步序列接入。</p>
+<p>（翻译不出来：Observables fill the gap by being the ideal way to access asynchronous sequences of multiple items）</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>single items</th>
+<th>multiple items</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>synchronous</td>
+<td>T getData()</td>
+<td>Iterable<t> getData()</t></td>
+</tr>
+<tr>
+<td>asynchronous</td>
+<td>Future<t> getData()</t></td>
+<td>Observable<t> getData()</t></td>
+</tr>
+</tbody>
+</table>
+<p>有时候这个被称为“<a href="https://en.wikipedia.org/wiki/Functional_reactive_programming" target="_blank" rel="noopener">函数式响应式编程</a>”，但是这是不合适的叫法。ReactiveX也许是函数式的，也许是响应式的，但是“函数式响应式编程”是另一码事情。一个主要的不同点是：函数式响应式编程基于“值”来操作，“值”是随着时间不停的变化的。而ReactiveX基于“非连续”的“值”， 值是随着时间被发出（emitted）。（参考： <a href="https://github.com/conal/essence-and-origins-of-frp" target="_blank" rel="noopener">Conal Elliott’s work for more-precise information on functional reactive programming</a>）</p>
+<h2 id="为什么使用观察者模式"><a href="#为什么使用观察者模式" class="headerlink" title="为什么使用观察者模式"></a>为什么使用观察者模式</h2><p>ReactiveX 使使用者通过定义一个集合来定义一系列的“简单的、可组合的操作”，来处理一系列的异步事件；他使混乱的web回调变得简单，进而使代码更具有可读性，更少的bug。</p>
+<h3 id="可组合"><a href="#可组合" class="headerlink" title="可组合"></a>可组合</h3><p><a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Future.html" target="_blank" rel="noopener">Java Futures</a> 技术是最快捷的方式来实现 <a href="https://gist.github.com/4670979" target="_blank" rel="noopener">a single level of asynchronous execution</a> 但是，当存在嵌套调用场景时futures技术会造成<a href="https://gist.github.com/4671081" target="_blank" rel="noopener">non-trivial complexity</a> 。</p>
+<p>很难<a href="https://gist.github.com/4671081#file-futuresb-java-L163" target="_blank" rel="noopener">使用future完美的组合条件式的异步处理流程</a>（或者说是不可能实现的，因为每一个运行时的请求的延迟是变化的）。这当然<a href="https://www.amazon.com/gp/product/0321349601?ie=UTF8&amp;tag=none0b69&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0321349601" target="_blank" rel="noopener">可以做到</a>， 但是会迅速的变得复杂（进而易错）或者过早的阻塞在<code>Future.get()</code>, 这样会削减异步带来的收益。</p>
+<p>ReactiveX Observables， 在另一方面，倾向于<a href="https://github.com/Netflix/RxJava/wiki/How-To-Use#composition" target="_blank" rel="noopener">组合流程并顺序化异步数据</a>。</p>
+<h3 id="灵活"><a href="#灵活" class="headerlink" title="灵活"></a>灵活</h3><p>ReactiveX Observables 不仅仅支持emission单个scalar values（就像futures那样），并且支持一个序列的值甚至无限的流。<code>Observable</code> 是可以处理这些场景的一个抽象。Observable具备迭代器一样的灵活和优雅。</p>
+<p>Observable 是异步的推模型 <a href="http://en.wikipedia.org/wiki/Dual_(category_theory" target="_blank" rel="noopener">“dual”</a>) 对比与同步模式下迭代器的拉模型</p>
+<table>
+<thead>
+<tr>
+<th>event</th>
+<th>Iterable (pull)</th>
+<th>Observable (push)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>retrieve data（查询数据）</td>
+<td>T next()</td>
+<td>onNext(T)</td>
+</tr>
+<tr>
+<td>discover error（发现错误）</td>
+<td>throws <code>Exception</code></td>
+<td>onError(Exception)</td>
+</tr>
+<tr>
+<td>complete（完成）</td>
+<td>!hasNext()</td>
+<td>onCompleted()</td>
+</tr>
+</tbody>
+</table>
+<h3 id="不局限"><a href="#不局限" class="headerlink" title="不局限"></a>不局限</h3><p>（译者注：对于被监听方来说）</p>
+<p>ReactiveX 不倾向于任何特定的并发或异步实现方式。Observable可以通过线程池、event loops、nio、actors（比如akka）实现，或者其他任何实基于你的经验的现方式。调用方把所有的和Observable相关的代码认为是异步的，无论底层的实现是阻塞的或非阻塞的也无论是什么实现方式。</p>
+<p>Observable 如何实现?</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Observable&lt;data&gt; <span class="title">getData</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>does it work synchronously on the same thread as the caller?</li>
+<li>does it work asynchronously on a distinct thread?</li>
+<li>does it divide its work over multiple threads that may return data to the caller in any order?</li>
+<li>does it use an Actor (or multiple Actors) instead of a thread pool?</li>
+<li>does it use NIO with an event-loop to do asynchronous network access?</li>
+<li>does it use an event-loop to separate the work thread from the callback thread?</li>
+</ul>
+<p>从监听者的视角来看，这都无所谓。</p>
+<p>提一点：基于ReactiveX你可以随时改变你的主意，彻底的改变Observable的实现方式，不需要改变调用方的代码。</p>
+<h3 id="回调有自身的问题"><a href="#回调有自身的问题" class="headerlink" title="回调有自身的问题"></a>回调有自身的问题</h3><p><code>回调</code>可以解决过早的阻塞在<code>Future.get()</code>的问题，它原生的高效，因为他们在response ready的时候执行。但是和futures一样，回调比较适用于单层的异步执行，<a href="https://gist.github.com/4677544" target="_blank" rel="noopener">嵌套时会变得不好用</a>。</p>
+<h3 id="ReactiveX有多语言实现"><a href="#ReactiveX有多语言实现" class="headerlink" title="ReactiveX有多语言实现"></a>ReactiveX有多语言实现</h3><p>（吹牛逼的内容不翻译了。）</p>
+<h2 id="响应式编程"><a href="#响应式编程" class="headerlink" title="响应式编程"></a>响应式编程</h2><p>ReactiveX 提供了<a href="http://reactivex.io/documentation/operators.html" target="_blank" rel="noopener">一组操作器</a>，使用者可以过滤、选择、转换、组装、组合Observables。这样就支持了高效的执行和调度。</p>
+<p>可以把Observable当做一个“推”，类比于迭代器的“拉”。作为一个<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/Iterable.html" target="_blank" rel="noopener">迭代器</a>，消费者从生产者拉取值，当前线程会被阻塞直到值到达。相形之下，Observables生产值并把它推送给消费者。这种方式更加灵活，因为值可以同步或异步的到达。</p>
+<p>下面的样例代码，展示迭代器和Observable在高阶函数方面的相似之处：</p>
+<p><strong>Iterable</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">getDataFromLocalMemory()</span><br><span class="line">  .skip(<span class="number">10</span>)</span><br><span class="line">  .take(<span class="number">5</span>)</span><br><span class="line">  .map(&#123; s -&gt; <span class="keyword">return</span> s + <span class="string">" transformed"</span> &#125;)</span><br><span class="line">  .forEach(&#123; println <span class="string">"next =&gt; "</span> + it &#125;)</span><br></pre></td></tr></table></figure>
+<p><strong>Observable</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">getDataFromNetwork()</span><br><span class="line">  .skip(<span class="number">10</span>)</span><br><span class="line">  .take(<span class="number">5</span>)</span><br><span class="line">  .map(&#123; s -&gt; <span class="keyword">return</span> s + <span class="string">" transformed"</span> &#125;)</span><br><span class="line">  .subscribe(&#123; println <span class="string">"onNext =&gt; "</span> + it &#125;)</span><br></pre></td></tr></table></figure>
+<p>Observable 添加了两个遗漏的语义（相对于GOF Observer pattern）：</p>
+<ul>
+<li>生产者通知消费者不再有数据的能力（<code>onCompleted</code> method）</li>
+<li>生产者通知消费之发生错误的能力（<code>onError</code> method）</li>
+</ul>
+<p>基于这些添加项，ReactiveX调和了Iterable 和 Observable 两种模式， 他们唯一的区别是数据流的方向。这非常重要，因为任何可以在Iterable上执行的动作，用户都可以在Observable来做。</p>
 
-        <div class="article-info info-on-right">
-          
-          
+      
 
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>离全国人民共同富裕又更近了一步<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/alipay.png">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://hongkaiwen.github.io/2018/06/05/ReactiveX/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/04/29/填坑日记之@Scheduled and RestTemplate/" class="archive-article-date">
-  	<time datetime="2018-04-29T15:35:41.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-04-29</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2018/04/29/填坑日记之@Scheduled and RestTemplate/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">填坑日记之@Scheduled and RestTemplate</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/04/29/填坑日记之@Scheduled and RestTemplate/">填坑日记之@Scheduled and RestTemplate</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">填坑日记</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#为什么使用观察者模式"><span class="toc-number">1.</span> <span class="toc-text">为什么使用观察者模式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#可组合"><span class="toc-number">1.1.</span> <span class="toc-text">可组合</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#灵活"><span class="toc-number">1.2.</span> <span class="toc-text">灵活</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#不局限"><span class="toc-number">1.3.</span> <span class="toc-text">不局限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#回调有自身的问题"><span class="toc-number">1.4.</span> <span class="toc-text">回调有自身的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ReactiveX有多语言实现"><span class="toc-number">1.5.</span> <span class="toc-text">ReactiveX有多语言实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#响应式编程"><span class="toc-number">2.</span> <span class="toc-text">响应式编程</span></a></li></ol>
+                    </div>
+                </span>
+            </div>
         </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
+        
+    </div>
+</aside>
+
+
+
   
   
-    </div></section>
   
 
-    
+  
+
+  
+
+  
 
 
           </div>
@@ -237,8 +415,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
