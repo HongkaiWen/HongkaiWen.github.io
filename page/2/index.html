@@ -136,6 +136,93 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-读书笔记-linux-load查看与分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/03/05/读书笔记-linux-load查看与分析/">读书笔记-linux load查看与分析</a>
+    </h1>
+  
+
+        
+        <a href="/2016/03/05/读书笔记-linux-load查看与分析/" class="archive-article-date">
+  	<time datetime="2016-03-05T09:23:41.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2016-03-05</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>读书笔记 - 《大型分布式网站架构设计与实践》</p>
+<p><strong>LOAD</strong></p>
+<p>定义:  特定时间间隔内运行队列中的平均数，       一个线程如果满足下面三个条件，就会处于运行队列中。</p>
+<ul>
+<li>没有处于IO等待状态</li>
+<li>没有主动进入等待状态（wait）</li>
+<li>没有被终止。</li>
+</ul>
+<p>举例说明：8核cpu 运行16根线程，如果线程平均分配，每个cpu运行队列中有两个线程在运行，如果此状态持续一分钟，那么这一分钟内系统的load值就是2.</p>
+<p>判断条件：如果load不大于3，系统负载正常；大于5则负载过高。</p>
+<p>查看方法：uptime\top\dstat</p>
+<h3 id="uptime"><a href="#uptime" class="headerlink" title="uptime"></a>uptime</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@xxx ~]<span class="comment"># uptime</span></span><br><span class="line"> 17:27:03 up  1:02,  2 users,  load average: 0.00, 0.03, 0.05</span><br></pre></td></tr></table></figure>
+<h3 id="top"><a href="#top" class="headerlink" title="top"></a>top</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@xxx ~]<span class="comment"># top</span></span><br><span class="line">top - 17:27:28 up  1:03,  2 users,  load average: 0.25, 0.09, 0.06</span><br><span class="line">Tasks: 114 total,   2 running, 112 sleeping,   0 stopped,   0 zombie</span><br></pre></td></tr></table></figure>
+<h3 id="dstat"><a href="#dstat" class="headerlink" title="dstat"></a>dstat</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@xxx ~]<span class="comment"># dstat -l</span></span><br><span class="line">---load-avg---</span><br><span class="line"> 1m   5m  15m</span><br><span class="line">0.15 0.08 0.06</span><br><span class="line">0.15 0.08 0.06</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">读书笔记</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2016/03/05/读书笔记-linux-load查看与分析/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-java-并发死锁产生原因与诊断" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -586,6 +673,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">idea,golang,plugin,webstorm,JetBrains</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">rxjava 雕虫小技</a>
               </li>
              
               <li class="article-tag-list-item">

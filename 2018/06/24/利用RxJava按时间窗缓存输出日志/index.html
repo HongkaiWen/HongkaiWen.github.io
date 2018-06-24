@@ -6,15 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://hongkaiwen.github.io">
-  <title>Archives: 2017 | Kuzan</title>
+  <title>利用 RxJava 按时间窗缓存输出日志 | Kuzan</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Kuzan">
-<meta property="og:url" content="https://hongkaiwen.github.io/archives/2017/index.html">
+  <meta name="description" content="最近有一个小场景，利用websocket想browser实时输出日志，后端利用 Apache Tailer 监控文件变化，当有新内容时，实时想前端推送，由于推送过于频繁, 浏览器端出现假死的现象。模拟代码如下，Apache Tailer 每读取一行，就会调用一次MyListener的handle方法。 1234567891011121314151617public class TailFilePl">
+<meta name="keywords" content="rxjava 雕虫小技">
+<meta property="og:type" content="article">
+<meta property="og:title" content="利用 RxJava 按时间窗缓存输出日志">
+<meta property="og:url" content="https://hongkaiwen.github.io/2018/06/24/利用RxJava按时间窗缓存输出日志/index.html">
 <meta property="og:site_name" content="Kuzan">
+<meta property="og:description" content="最近有一个小场景，利用websocket想browser实时输出日志，后端利用 Apache Tailer 监控文件变化，当有新内容时，实时想前端推送，由于推送过于频繁, 浏览器端出现假死的现象。模拟代码如下，Apache Tailer 每读取一行，就会调用一次MyListener的handle方法。 1234567891011121314151617public class TailFilePl">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-06-24T08:56:16.926Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Kuzan">
+<meta name="twitter:title" content="利用 RxJava 按时间窗缓存输出日志">
+<meta name="twitter:description" content="最近有一个小场景，利用websocket想browser实时输出日志，后端利用 Apache Tailer 监控文件变化，当有新内容时，实时想前端推送，由于推送过于频繁, 浏览器端出现假死的现象。模拟代码如下，Apache Tailer 每读取一行，就会调用一次MyListener的handle方法。 1234567891011121314151617public class TailFilePl">
   
   
     <link rel="icon" href="/favicon.png">
@@ -134,217 +139,190 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-利用RxJava按时间窗缓存输出日志" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      利用 RxJava 按时间窗缓存输出日志
+    </h1>
+  
+
+        
+        <a href="/2018/06/24/利用RxJava按时间窗缓存输出日志/" class="archive-article-date">
+  	<time datetime="2018-06-24T08:55:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-24</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近有一个小场景，利用websocket想browser实时输出日志，后端利用 <a href="https://commons.apache.org/proper/commons-io/javadocs/api-2.4/org/apache/commons/io/input/Tailer.html" target="_blank" rel="noopener">Apache Tailer</a> 监控文件变化，当有新内容时，实时想前端推送，由于推送过于频繁, 浏览器端出现假死的现象。模拟代码如下，<a href="https://commons.apache.org/proper/commons-io/javadocs/api-2.4/org/apache/commons/io/input/Tailer.html" target="_blank" rel="noopener">Apache Tailer</a> 每读取一行，就会调用一次MyListener的handle方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TailFilePlay</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span> <span class="params">(String args[])</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        Tailer.create(<span class="keyword">new</span> File(<span class="string">"/tmp/test.log"</span>), <span class="keyword">new</span> MyListener());</span><br><span class="line">        TimeUnit.SECONDS.sleep(<span class="number">3000</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyListener</span> <span class="keyword">extends</span> <span class="title">TailerListenerAdapter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handle</span><span class="params">(String line)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//send log to browser</span></span><br><span class="line">        System.out.println(line);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> 考虑做一个buffer，每隔一段时间，积累一些日之后，向前端输出日志。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TailFilePlay</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String LOG_FILE_PATH = <span class="string">"/tmp/test.log"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span> <span class="params">(String args[])</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 三秒钟输出一次日志</span></span><br><span class="line">        Observable.create(emitter -&gt;</span><br><span class="line">            Tailer.create(<span class="keyword">new</span> File(LOG_FILE_PATH), <span class="keyword">new</span> MyListener(emitter))</span><br><span class="line">        )</span><br><span class="line">                .buffer(<span class="number">3</span>, TimeUnit.SECONDS)</span><br><span class="line">                .subscribeOn(Schedulers.io())</span><br><span class="line">                .subscribe(TailFilePlay::print);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 模拟每隔一秒钟生成一行日志</span></span><br><span class="line">        Observable.interval(<span class="number">1</span>, TimeUnit.SECONDS).map(String::valueOf).map(log -&gt; String.format(<span class="string">"&gt;&gt;&gt;   %s\n"</span>, log)).subscribe(TailFilePlay::monitorLog);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        TimeUnit.SECONDS.sleep(<span class="number">300</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">(List&lt;Object&gt; logs)</span></span>&#123;</span><br><span class="line">        logs.forEach(System.out::println);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">monitorLog</span><span class="params">(String log)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        FileUtils.writeStringToFile(<span class="keyword">new</span> File(LOG_FILE_PATH), log, <span class="string">"utf-8"</span>, <span class="keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyListener</span> <span class="keyword">extends</span> <span class="title">TailerListenerAdapter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    ObservableEmitter&lt;Object&gt; emitter;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyListener</span><span class="params">(ObservableEmitter&lt;Object&gt; emitter)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.emitter = emitter;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handle</span><span class="params">(String line)</span> </span>&#123;</span><br><span class="line">        emitter.onNext(line);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>虽然写了一坨代码，真正核心的代码就如下一句：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 三秒钟输出一次日志</span></span><br><span class="line">Observable.create(emitter -&gt;</span><br><span class="line">                  Tailer.create(<span class="keyword">new</span> File(LOG_FILE_PATH), <span class="keyword">new</span> MyListener(emitter))</span><br><span class="line">                 )</span><br><span class="line">  .buffer(<span class="number">3</span>, TimeUnit.SECONDS)</span><br><span class="line">  .subscribeOn(Schedulers.io())</span><br><span class="line">  .subscribe(TailFilePlay::print);</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>离全国人民共同富裕又更近了一步<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="https://raw.githubusercontent.com/HongkaiWen/images/master/blog/alipay.png">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/07/22/java-线上调试工具-greys-anatomy-实践初探/" class="archive-article-date">
-  	<time datetime="2017-07-22T15:12:26.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-22</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/07/22/java-线上调试工具-greys-anatomy-实践初探/">java 线上调试工具 greys-anatomy 实践初探</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/06/17/应用个别接口无响应问题排查记录/" class="archive-article-date">
-  	<time datetime="2017-06-17T14:52:58.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-17</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/06/17/应用个别接口无响应问题排查记录/">应用个别接口无响应问题排查记录</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/06/11/《Java-性能调优》读书笔记-Garbage-First-综述/" class="archive-article-date">
-  	<time datetime="2017-06-11T00:53:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-11</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/06/11/《Java-性能调优》读书笔记-Garbage-First-综述/">《Java 性能调优》读书笔记 -- Garbage First 综述</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/06/07/hrome network canceled 问题排查记录/" class="archive-article-date">
-  	<time datetime="2017-06-07T14:27:19.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-07</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/06/07/hrome network canceled 问题排查记录/">chrome network canceled 问题排查记录</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">chrome 302 canceled</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">rxjava 雕虫小技</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://hongkaiwen.github.io/2018/06/24/利用RxJava按时间窗缓存输出日志/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/06/07/chrome-network-show-canceled/" class="archive-article-date">
-  	<time datetime="2017-06-07T14:27:19.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-07</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2018/06/05/ReactiveX/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">ReactiveX</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/06/07/chrome-network-show-canceled/">chrome network canceled 问题排查记录</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">chrome 302 canceled</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    目录，不存在的…
+                    </div>
+                </span>
+            </div>
         </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
+        
+    </div>
+</aside>
+
+
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/05/20/idea-webstorm-安装golang插件/" class="archive-article-date">
-  	<time datetime="2017-05-20T00:53:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-05-20</time>
-</a>
-        </div>
-    	 
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/05/20/idea-webstorm-安装golang插件/">idea/webstorm 安装golang插件</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">idea,golang,plugin,webstorm,JetBrains</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
   
 
-    
+  
+
+  
 
 
           </div>
@@ -367,8 +345,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

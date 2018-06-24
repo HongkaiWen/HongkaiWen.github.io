@@ -136,6 +136,85 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-利用RxJava按时间窗缓存输出日志" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/06/24/利用RxJava按时间窗缓存输出日志/">利用 RxJava 按时间窗缓存输出日志</a>
+    </h1>
+  
+
+        
+        <a href="/2018/06/24/利用RxJava按时间窗缓存输出日志/" class="archive-article-date">
+  	<time datetime="2018-06-24T08:55:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-24</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近有一个小场景，利用websocket想browser实时输出日志，后端利用 <a href="https://commons.apache.org/proper/commons-io/javadocs/api-2.4/org/apache/commons/io/input/Tailer.html" target="_blank" rel="noopener">Apache Tailer</a> 监控文件变化，当有新内容时，实时想前端推送，由于推送过于频繁, 浏览器端出现假死的现象。模拟代码如下，<a href="https://commons.apache.org/proper/commons-io/javadocs/api-2.4/org/apache/commons/io/input/Tailer.html" target="_blank" rel="noopener">Apache Tailer</a> 每读取一行，就会调用一次MyListener的handle方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TailFilePlay</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span> <span class="params">(String args[])</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        Tailer.create(<span class="keyword">new</span> File(<span class="string">"/tmp/test.log"</span>), <span class="keyword">new</span> MyListener());</span><br><span class="line">        TimeUnit.SECONDS.sleep(<span class="number">3000</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyListener</span> <span class="keyword">extends</span> <span class="title">TailerListenerAdapter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handle</span><span class="params">(String line)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//send log to browser</span></span><br><span class="line">        System.out.println(line);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> 考虑做一个buffer，每隔一段时间，积累一些日之后，向前端输出日志。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TailFilePlay</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String LOG_FILE_PATH = <span class="string">"/tmp/test.log"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span> <span class="params">(String args[])</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 三秒钟输出一次日志</span></span><br><span class="line">        Observable.create(emitter -&gt;</span><br><span class="line">            Tailer.create(<span class="keyword">new</span> File(LOG_FILE_PATH), <span class="keyword">new</span> MyListener(emitter))</span><br><span class="line">        )</span><br><span class="line">                .buffer(<span class="number">3</span>, TimeUnit.SECONDS)</span><br><span class="line">                .subscribeOn(Schedulers.io())</span><br><span class="line">                .subscribe(TailFilePlay::print);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 模拟每隔一秒钟生成一行日志</span></span><br><span class="line">        Observable.interval(<span class="number">1</span>, TimeUnit.SECONDS).map(String::valueOf).map(log -&gt; String.format(<span class="string">"&gt;&gt;&gt;   %s\n"</span>, log)).subscribe(TailFilePlay::monitorLog);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        TimeUnit.SECONDS.sleep(<span class="number">300</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">(List&lt;Object&gt; logs)</span></span>&#123;</span><br><span class="line">        logs.forEach(System.out::println);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">monitorLog</span><span class="params">(String log)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        FileUtils.writeStringToFile(<span class="keyword">new</span> File(LOG_FILE_PATH), log, <span class="string">"utf-8"</span>, <span class="keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyListener</span> <span class="keyword">extends</span> <span class="title">TailerListenerAdapter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    ObservableEmitter&lt;Object&gt; emitter;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyListener</span><span class="params">(ObservableEmitter&lt;Object&gt; emitter)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.emitter = emitter;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handle</span><span class="params">(String line)</span> </span>&#123;</span><br><span class="line">        emitter.onNext(line);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>虽然写了一坨代码，真正核心的代码就如下一句：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 三秒钟输出一次日志</span></span><br><span class="line">Observable.create(emitter -&gt;</span><br><span class="line">                  Tailer.create(<span class="keyword">new</span> File(LOG_FILE_PATH), <span class="keyword">new</span> MyListener(emitter))</span><br><span class="line">                 )</span><br><span class="line">  .buffer(<span class="number">3</span>, TimeUnit.SECONDS)</span><br><span class="line">  .subscribeOn(Schedulers.io())</span><br><span class="line">  .subscribe(TailFilePlay::print);</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">rxjava 雕虫小技</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/06/24/利用RxJava按时间窗缓存输出日志/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-ReactiveX" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1258,93 +1337,6 @@ query.append(&quot;fieldName&quot;, pattern);
 
 
   
-    <article id="post-读书笔记-linux-load查看与分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/03/05/读书笔记-linux-load查看与分析/">读书笔记-linux load查看与分析</a>
-    </h1>
-  
-
-        
-        <a href="/2016/03/05/读书笔记-linux-load查看与分析/" class="archive-article-date">
-  	<time datetime="2016-03-05T09:23:41.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2016-03-05</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>读书笔记 - 《大型分布式网站架构设计与实践》</p>
-<p><strong>LOAD</strong></p>
-<p>定义:  特定时间间隔内运行队列中的平均数，       一个线程如果满足下面三个条件，就会处于运行队列中。</p>
-<ul>
-<li>没有处于IO等待状态</li>
-<li>没有主动进入等待状态（wait）</li>
-<li>没有被终止。</li>
-</ul>
-<p>举例说明：8核cpu 运行16根线程，如果线程平均分配，每个cpu运行队列中有两个线程在运行，如果此状态持续一分钟，那么这一分钟内系统的load值就是2.</p>
-<p>判断条件：如果load不大于3，系统负载正常；大于5则负载过高。</p>
-<p>查看方法：uptime\top\dstat</p>
-<h3 id="uptime"><a href="#uptime" class="headerlink" title="uptime"></a>uptime</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@xxx ~]<span class="comment"># uptime</span></span><br><span class="line"> 17:27:03 up  1:02,  2 users,  load average: 0.00, 0.03, 0.05</span><br></pre></td></tr></table></figure>
-<h3 id="top"><a href="#top" class="headerlink" title="top"></a>top</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@xxx ~]<span class="comment"># top</span></span><br><span class="line">top - 17:27:28 up  1:03,  2 users,  load average: 0.25, 0.09, 0.06</span><br><span class="line">Tasks: 114 total,   2 running, 112 sleeping,   0 stopped,   0 zombie</span><br></pre></td></tr></table></figure>
-<h3 id="dstat"><a href="#dstat" class="headerlink" title="dstat"></a>dstat</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@xxx ~]<span class="comment"># dstat -l</span></span><br><span class="line">---load-avg---</span><br><span class="line"> 1m   5m  15m</span><br><span class="line">0.15 0.08 0.06</span><br><span class="line">0.15 0.08 0.06</span><br></pre></td></tr></table></figure>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">读书笔记</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2016/03/05/读书笔记-linux-load查看与分析/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -1447,6 +1439,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">idea,golang,plugin,webstorm,JetBrains</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">rxjava 雕虫小技</a>
               </li>
              
               <li class="article-tag-list-item">
