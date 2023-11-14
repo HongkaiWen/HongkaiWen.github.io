@@ -1,11 +1,369 @@
-<html>
-    <head>
-        <script type="application/javascript">
-            window.location.href="https://hongkaiwen.gitee.io/kuzan/";
-        </script>
-    </head>
-    <body>
-        sorry, 跳转中.....<br/>
-        github 不太稳定....
-    </body>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>彩色球和框框</title>
+
+  <style>
+    .container {
+      display: flex;
+      width: 330px;
+      margin-top: 20px;
+    }
+
+    .column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-right: 20px;
+    }
+
+    .box {
+      width: 50px;
+      height: 50px;
+      border: 1px solid black;
+      border-radius: 50%;
+      margin: 5px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn {
+      display: inline-block;
+      border-radius: 30px;
+      padding: 10px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      color: white;
+      background-color: #4CAF50;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #3E8E41;
+    }
+
+    .orange-text {
+      color: orange;
+      font-weight: bold;
+    }
+
+    .green-text {
+      color: green;
+      font-weight: bold;
+    }
+
+    .gray-text {
+      color: gray;
+      font-weight: bold;
+    }
+
+    .balloon {
+      position: absolute;
+      font-size: 40px;
+      line-height: 40px;
+      opacity: 0.7;
+      animation-fill-mode: forwards;
+    }
+
+    @keyframes flyup {
+      0% {
+        bottom: 0;
+      }
+      100% {
+        bottom: 100%;
+      }
+    }
+  </style>
+
+  <script>
+    let round = 0;
+    let index = 0;
+    const colors = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'];
+
+    var answer = new Array(4); 
+
+    var target = new Array(4);
+
+    // 在这里编写 JavaScript 代码
+    function greet() {
+      round = 0;
+      index = 0;
+      answer.length = 0;
+      const balls = Array.from(document.querySelectorAll('.ball'));
+      balls.forEach(ball => {
+        ball.style.visibility = 'visible';
+      });
+      const boxes = Array.from(document.querySelectorAll('.box'));
+      boxes.forEach(box => {
+        box.style.backgroundColor = '';
+      });
+
+      //确认按钮消失
+      document.getElementById("ok").style.display = 'none'; 
+
+      //设置最终答案
+      target = getRandomColors(colors);
+      console.log(target);
+
+    }
+
+    // 随机生成最终答案
+    function getRandomColors(colors) {
+      const target = [];
+      for (let i = 0; i < 4; i++) {
+        const randomIndex = Math.floor(Math.random() * colors.length);
+        target.push(colors[randomIndex]);
+        colors.splice(randomIndex, 1);
+      }
+      return target;
+    }
+
+    function handleBallClick(ball) {
+      if(index == 3){
+        document.getElementById("ok").style.display = 'block'; 
+      }
+      if(index == 4){
+        alert("本轮已结束！");
+        return;
+      }
+      const boxes = Array.from(document.querySelectorAll('.box'));
+      const currentBox = boxes[round*4 + index];
+      currentBox.style.backgroundColor = ball.style.backgroundColor;
+      ball.style.visibility = 'hidden';
+      answer[index] = ball.style.backgroundColor;
+      index++;
+    }
+
+    function revert() {
+      index--;
+      currentColor = answer[index];
+      const balls = Array.from(document.querySelectorAll('.ball'));
+      const correspondingBall = balls.find(ball => ball.style.backgroundColor === currentColor);
+      correspondingBall.style.visibility = 'visible';
+      answer[index] = undefined;
+      document.getElementById(round + '' + index).style.backgroundColor = '';
+    }
+
+    function nextRound(){
+      if(round == 9){
+        alert("失败喽，正确的答案是：" + target);
+        return;
+      }
+
+      if(check(answer, target)){
+        //成功了，退出程序
+        createBalloon();
+        return;
+      }
+
+      round++;
+      index=0;
+      var balls = document.querySelectorAll('.ball'); // 获取所有具有 'ball' 类名的元素
+
+      balls.forEach(function(ball) {
+        ball.style.visibility = 'visible';
+      });
+      document.getElementById("ok").style.display = 'none'; 
+
+      //重置选中答案
+      answer = new Array(4);
+
+    }
+
+    //检查答案
+    function check(answer, target){
+      allRight = countMatchingElements(answer, target);
+      halfRight = countAnswerInTarget(answer, target, allRight);
+      div_index = round + 1;
+      document.getElementById("all_right_" + div_index).innerText = '全对：' + allRight;
+      document.getElementById("half_right_" + div_index).innerText = '半对：' + halfRight;
+      var wrong = 4 - allRight - halfRight; 
+      document.getElementById("wrong_" + div_index).innerText = '全错：' + wrong;
+      return allRight == 4;
+    }
+
+    //半对数量
+    function countAnswerInTarget(answer, target, allRightCount) {
+      let count = 0;
+      for (let i = 0; i < answer.length; i++) {
+        for (let j = 0; j < target.length; j++) {
+          if (answer[i].includes(target[j])) {
+            count++;
+            break;
+          }
+        }
+      }
+      return count - allRightCount;
+    }
+
+    //全对数量
+    function countMatchingElements(answer, target) {
+      let count = 0;
+      for (let i = 0; i < answer.length; i++) {
+        if (i < target.length && answer[i] === target[i]) {
+          count++;
+        }
+      }
+      return count;
+    }
+    
+    function createBalloon() {
+      const balloon = document.createElement('div');
+      balloon.innerText = '🎈';
+      balloon.classList.add('balloon');
+      balloon.style.left = `${Math.floor(Math.random() * window.innerWidth)}px`;
+      balloon.style.color = getRandomColor(); // 设置随机颜色
+      document.body.appendChild(balloon);
+
+      const animationDuration = Math.floor(Math.random() * 10) + 5;
+      balloon.style.animation = `flyup ${animationDuration}s linear`;
+    }
+
+    function getRandomColor() {
+      return '#' + Math.floor(Math.random() * 16777215).toString(16);
+    }
+
+  </script>
+
+</head>
+
+<body onload="greet()">
+
+  <div style="display: flex; justify-content: space-between; align-items: center; width: 400px;">
+    <div class="ball" style="width: 50px; height: 50px; border-radius: 50%; background-color: red;" onclick="handleBallClick(this)"></div>
+    <div class="ball" style="width: 50px; height: 50px; border-radius: 50%; background-color: orange;" onclick="handleBallClick(this)"></div>
+    <div class="ball" style="width: 50px; height: 50px; border-radius: 50%; background-color: yellow;" onclick="handleBallClick(this)"></div>
+    <div class="ball" style="width: 50px; height: 50px; border-radius: 50%; background-color: green;" onclick="handleBallClick(this)"></div>
+    <div class="ball" style="width: 50px; height: 50px; border-radius: 50%; background-color: blue;" onclick="handleBallClick(this)"></div>
+    <div class="ball" style="width: 50px; height: 50px; border-radius: 50%; background-color: purple;" onclick="handleBallClick(this)"></div>
+  </div>
+
+  <div class="container">
+    <div class="column">
+      <h3>第一轮</h3>
+      <div class="box" id="00"></div>
+      <div class="box" id="01"></div>
+      <div class="box" id="02"></div>
+      <div class="box" id="03"></div>
+      <div class="green-text" id="all_right_1"></div>
+      <div class="orange-text" id="half_right_1"></div>
+      <div class="gray-text" id="wrong_1"></div>
+    </div>
+
+    <div class="column">
+      <h3>第二轮</h3>
+      <div class="box" id="10"></div>
+      <div class="box" id="11"></div>
+      <div class="box" id="12"></div>
+      <div class="box" id="13"></div>
+      <div class="green-text" id="all_right_2"></div>
+      <div class="orange-text" id="half_right_2"></div>
+      <div class="gray-text" id="wrong_2"></div>
+    </div>
+
+    <div class="column">
+      <h3>第三轮</h3>
+      <div class="box" id="20"></div>
+      <div class="box" id="21"></div>
+      <div class="box" id="22"></div>
+      <div class="box" id="23"></div>
+      <div class="green-text" id="all_right_3"></div>
+      <div class="orange-text" id="half_right_3"></div>
+      <div class="gray-text" id="wrong_3"></div>
+    </div>
+
+    <div class="column">
+      <h3>第四轮</h3>
+      <div class="box" id="30"></div>
+      <div class="box" id="31"></div>
+      <div class="box" id="32"></div>
+      <div class="box" id="33"></div>
+      <div class="green-text" id="all_right_4"></div>
+      <div class="orange-text" id="half_right_4"></div>
+      <div class="gray-text" id="wrong_4"></div>
+    </div>
+
+    <div class="column">
+      <h3>第五轮</h3>
+      <div class="box" id="40"></div>
+      <div class="box" id="41"></div>
+      <div class="box" id="42"></div>
+      <div class="box" id="43"></div>
+      <div class="green-text" id="all_right_5"></div>
+      <div class="orange-text" id="half_right_5"></div>
+      <div class="gray-text" id="wrong_5"></div>
+    </div>
+
+    <div class="column">
+      <h3>第六轮</h3>
+      <div class="box" id="50"></div>
+      <div class="box" id="51"></div>
+      <div class="box" id="52"></div>
+      <div class="box" id="53"></div>
+      <div class="green-text" id="all_right_6"></div>
+      <div class="orange-text" id="half_right_6"></div>
+      <div class="gray-text" id="wrong_6"></div>
+    </div>
+
+    <div class="column">
+      <h3>第七轮</h3>
+      <div class="box" id="60"></div>
+      <div class="box" id="61"></div>
+      <div class="box" id="62"></div>
+      <div class="box" id="63"></div>
+      <div class="green-text" id="all_right_7"></div>
+      <div class="orange-text" id="half_right_7"></div>
+      <div class="gray-text" id="wrong_7"></div>
+    </div>
+
+    <div class="column">
+      <h3>第八轮</h3>
+      <div class="box" id="70"></div>
+      <div class="box" id="71"></div>
+      <div class="box" id="72"></div>
+      <div class="box" id="73"></div>
+      <div class="green-text" id="all_right_8"></div>
+      <div class="orange-text" id="half_right_8"></div>
+      <div class="gray-text" id="wrong_8"></div>
+    </div>
+
+    <div class="column">
+      <h3>第九轮</h3>
+      <div class="box" id="80"></div>
+      <div class="box" id="81"></div>
+      <div class="box" id="82"></div>
+      <div class="box" id="83"></div>
+      <div class="green-text" id="all_right_9"></div>
+      <div class="orange-text" id="half_right_9"></div>
+      <div class="gray-text" id="wrong_9"></div>
+    </div>
+
+    <div class="column">
+      <h3>第十轮</h3>
+      <div class="box" id="90"></div>
+      <div class="box" id="91"></div>
+      <div class="box" id="92"></div>
+      <div class="box" id="93"></div>
+      <div class="green-text" id="all_right_10"></div>
+      <div class="orange-text" id="half_right_10"></div>
+      <div class="gray-text" id="wrong_10"></div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; align-items: center;">
+      <a href="#" class="btn" onclick="greet()" style="margin-bottom: 10px;" id="start">开始游戏</a>
+      <a href="#" class="btn" onclick="revert()" style="margin-bottom: 10px;" id="revert">回退</a>
+      <a href="#" class="btn" id="ok" onclick="nextRound()">确认</a>
+    </div>
+  </div>
+
+
+</body>
+
 </html>
