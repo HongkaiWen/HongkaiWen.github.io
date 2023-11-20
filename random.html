@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>三（5）专用小程序</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            text-align: center;
+            background-color: #ffccff; /* 浅粉色背景 */
+            font-family: 'Comic Sans MS', cursive, sans-serif; /* 可爱字体 */
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #ff6699; /* 粉红色标题 */
+        }
+
+        .number {
+            font-size: 48px; /* 更大的数字 */
+            margin-bottom: 20px;
+            color: #ff33cc; /* 紫色数字 */
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 20px; /* 更大的按钮字体 */
+            margin: 10px;
+            background-color: #ff99cc; /* 淡粉色按钮 */
+            border: none;
+            border-radius: 5px;
+            color: #ffffff; /* 白色文字 */
+        }
+    </style>
+</head>
+<body>
+    <h1>哪位小可爱呢？</h1>
+    <div class="number" id="number">0</div>
+    <button class="button" onclick="start()">开始</button>
+    <button class="button" onclick="stop()">停止</button>
+
+    <script>
+        var intervalId;
+
+        function start() {
+            intervalId = setInterval(randomNumber, 100);
+        }
+
+        function stop() {
+            clearInterval(intervalId);
+        }
+
+        function randomNumber() {
+            var numberElement = document.getElementById("number");
+            var randomNumber = Math.floor(Math.random() * 43) + 1;
+            numberElement.textContent = randomNumber;
+        }
+    </script>
+</body>
+</html>
