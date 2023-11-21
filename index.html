@@ -85,7 +85,7 @@
   <script>
     let round = 0;
     let index = 0;
-    const colors = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'];
+    colors = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'];
 
     var answer = new Array(4); 
 
@@ -234,6 +234,15 @@
       return '#' + Math.floor(Math.random() * 16777215).toString(16);
     }
 
+    function handleRightClick(ball, color) {
+      ball.style.visibility = 'hidden';
+      if(color === "blue"){
+        colors = ['red', 'orange', 'yellow', 'green'];
+      } else {
+        colors = ['red', 'orange', 'yellow', 'green', 'blue'];
+      }
+    }
+
   </script>
 
 </head>
@@ -245,8 +254,8 @@
     <div class="ball" style="width: 50px; height: 50px; border-radius: 50%; background-color: orange;" onclick="handleBallClick(this)"></div>
     <div class="ball" style="width: 50px; height: 50px; border-radius: 50%; background-color: yellow;" onclick="handleBallClick(this)"></div>
     <div class="ball" style="width: 50px; height: 50px; border-radius: 50%; background-color: green;" onclick="handleBallClick(this)"></div>
-    <div class="ball" style="width: 50px; height: 50px; border-radius: 50%; background-color: blue;" onclick="handleBallClick(this)"></div>
-    <div class="ball" style="width: 50px; height: 50px; border-radius: 50%; background-color: purple;" onclick="handleBallClick(this)"></div>
+    <div class="ball" style="width: 50px; height: 50px; border-radius: 50%; background-color: blue;" onclick="handleBallClick(this)" oncontextmenu="handleRightClick(this, 'blue')"></div>
+    <div class="ball" style="width: 50px; height: 50px; border-radius: 50%; background-color: purple;" onclick="handleBallClick(this)" oncontextmenu="handleRightClick(this, 'purple')"></div>
   </div>
 
   <div class="container">
