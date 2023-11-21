@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>彩球猜谜游戏</title>
+  <title>彩色球和框框</title>
 
   <style>
     .container {
@@ -86,6 +86,7 @@
     let round = 0;
     let index = 0;
     colors = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'];
+    ballCntMode = 6;
 
     var answer = new Array(4); 
 
@@ -174,6 +175,9 @@
       balls.forEach(function(ball) {
         ball.style.visibility = 'visible';
       });
+
+      ballCountControl(ballCntMode);
+
       document.getElementById("ok").style.display = 'none'; 
 
       //重置选中答案
@@ -234,13 +238,26 @@
       return '#' + Math.floor(Math.random() * 16777215).toString(16);
     }
 
-    function handleRightClick(ball, color) {
-      ball.style.visibility = 'hidden';
-      if(color === "blue"){
+    function ballCountControl(cnt) {
+      if (cnt == 4){
         colors = ['red', 'orange', 'yellow', 'green'];
-      } else {
+        document.getElementById('ball5').style.visibility = 'hidden';
+        document.getElementById('ball6').style.visibility = 'hidden';
+        ballCntMode = 4;
+      } else if(cnt == 5){
         colors = ['red', 'orange', 'yellow', 'green', 'blue'];
+        document.getElementById('ball5').style.visibility = 'visible';
+        document.getElementById('ball6').style.visibility = 'hidden';
+        ballCntMode = 5;
+      } else {
+        colors = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'];
+        document.getElementById('ball5').style.visibility = 'visible';
+        document.getElementById('ball6').style.visibility = 'visible';
+        ballCntMode = 6;
       }
+      //设置最终答案
+      target = getRandomColors(colors);
+      console.log(target);
     }
 
   </script>
@@ -254,8 +271,8 @@
     <div class="ball" style="width: 50px; height: 50px; border-radius: 50%; background-color: orange;" onclick="handleBallClick(this)"></div>
     <div class="ball" style="width: 50px; height: 50px; border-radius: 50%; background-color: yellow;" onclick="handleBallClick(this)"></div>
     <div class="ball" style="width: 50px; height: 50px; border-radius: 50%; background-color: green;" onclick="handleBallClick(this)"></div>
-    <div class="ball" style="width: 50px; height: 50px; border-radius: 50%; background-color: blue;" onclick="handleBallClick(this)" oncontextmenu="handleRightClick(this, 'blue')"></div>
-    <div class="ball" style="width: 50px; height: 50px; border-radius: 50%; background-color: purple;" onclick="handleBallClick(this)" oncontextmenu="handleRightClick(this, 'purple')"></div>
+    <div id="ball5" class="ball" style="width: 50px; height: 50px; border-radius: 50%; background-color: blue;" onclick="handleBallClick(this)"></div>
+    <div id="ball6" class="ball" style="width: 50px; height: 50px; border-radius: 50%; background-color: purple;" onclick="handleBallClick(this)"></div>
   </div>
 
   <div class="container">
@@ -370,6 +387,9 @@
     </div>
 
     <div style="display: flex; flex-direction: column; align-items: center;">
+      <a href="#" class="btn" id="b4" onclick="ballCountControl(4)">4球模式</a>
+      <a href="#" class="btn" id="b5" onclick="ballCountControl(5)">5球模式</a>
+      <a href="#" class="btn" id="b6" onclick="ballCountControl(6)">6球模式</a>
       <a href="#" class="btn" onclick="revert()" style="margin-bottom: 10px;" id="revert">回退</a>
       <a href="#" class="btn" id="ok" onclick="nextRound()">确认</a>
     </div>
