@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>三（5）班专用</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            text-align: center;
+            background-color: #ffccff; /* 浅粉色背景 */
+            font-family: 'Comic Sans MS', cursive, sans-serif; /* 可爱字体 */
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #ff6699; /* 粉红色标题 */
+        }
+
+        .number {
+            font-size: 48px; /* 更大的数字 */
+            margin-bottom: 20px;
+            color: #ff33cc; /* 紫色数字 */
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 20px; /* 更大的按钮字体 */
+            margin: 10px;
+            background-color: #ff99cc; /* 淡粉色按钮 */
+            border: none;
+            border-radius: 5px;
+            color: #ffffff; /* 白色文字 */
+        }
+
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 80%;
+        }
+
+        th, td {
+            border: 1px solid #ff99cc; /* 表格边框颜色 */
+            padding: 10px;
+        }
+
+        th {
+            background-color: #ff99cc; /* 表头背景色 */
+            color: #ffffff; /* 表头文字颜色 */
+        }
+
+        .progress {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #666666; /* 灰色进度文字 */
+        }
+    </style>
+</head>
+<body>
+    <h1>哪位小可爱要到碗里来？</h1>
+    <div class="number" id="number">0</div>
+    <button class="button" onclick="start()">开始</button>
+    <button class="button" onclick="stop()">停止</button>
+    
+    <div class="progress" id="progress"></div>
+
+    <table id="winnersTable">
+        <thead>
+            <tr>
+                <th>已选中学号</th>
+                <th>进度</th>
+            </tr>
+        </thead>
+        <tbody id="winnersList">
+        </tbody>
+    </table>
+
+    <script>
+        var intervalId;
+        var winners = [];
+        var candidateNumbers = Array.from({length: 43}, (_, i) => i + 1);
+
+        function start() {
+            intervalId = setInterval(randomNumber, 100);
+        }
+
+        function stop() {
+            clearInterval(intervalId);
+            addToWinnersList(document.getElementById("number").textContent);
+            removeNumber();
+        }
+
+        function addToWinnersList(number) {
+            winners.unshift(number);
+            var winnersList = document.getElementById("winnersList");
+            winnersList.innerHTML = "";
+            for (var i = 0; i < winners.length; i++) {
+                var row = winnersList.insertRow(i);
+                var cell1 = row.insertCell(0);
+                cell1.textContent = winners[i];
+                var cell2 = row.insertCell(1);
+                cell2.textContent = (i + 1) + "/" + 43;
+            }
+            updateProgress();
+        }
+
+        function updateProgress() {
+            var progressElement = document.getElementById("progress");
+            progressElement.textContent = "已抽中 " + winners.length + "/" + 43 + " 个号码";
+        }
+
+        function randomNumber() {
+            var numberElement = document.getElementById("number");
+            var randomIndex = Math.floor(Math.random() * candidateNumbers.length);
+            var randomNumber = candidateNumbers[randomIndex];
+            numberElement.textContent = randomNumber;
+        }
+
+        function removeNumber() {
+            var numberElement = document.getElementById("number");
+            var selectedNumber = parseInt(numberElement.textContent);
+            var index = candidateNumbers.indexOf(selectedNumber);
+            if (index > -1) {
+                candidateNumbers.splice(index, 1);
+            }
+        }
+    </script>
+</body>
+</html>
