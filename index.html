@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>彩色球和框框</title>
+  <title>三（5）专用小游戏</title>
 
   <style>
     .container {
@@ -238,6 +238,13 @@
       return '#' + Math.floor(Math.random() * 16777215).toString(16);
     }
 
+    function modeSelect(cnt) {
+      ballCountControl(cnt);
+      //设置最终答案
+      target = getRandomColors(colors);
+      console.log(target);
+    }
+
     function ballCountControl(cnt) {
       if (cnt == 4){
         colors = ['red', 'orange', 'yellow', 'green'];
@@ -255,9 +262,6 @@
         document.getElementById('ball6').style.visibility = 'visible';
         ballCntMode = 6;
       }
-      //设置最终答案
-      target = getRandomColors(colors);
-      console.log(target);
     }
 
   </script>
@@ -387,14 +391,13 @@
     </div>
 
     <div style="display: flex; flex-direction: column; align-items: center;">
-      <a href="#" class="btn" id="b4" onclick="ballCountControl(4)">4球模式</a>
-      <a href="#" class="btn" id="b5" onclick="ballCountControl(5)">5球模式</a>
-      <a href="#" class="btn" id="b6" onclick="ballCountControl(6)">6球模式</a>
+      <a href="#" class="btn" id="b4" onclick="modeSelect(4)">4球模式</a>
+      <a href="#" class="btn" id="b5" onclick="modeSelect(5)">5球模式</a>
+      <a href="#" class="btn" id="b6" onclick="modeSelect(6)">6球模式</a>
       <a href="#" class="btn" onclick="revert()" style="margin-bottom: 10px;" id="revert">回退</a>
       <a href="#" class="btn" id="ok" onclick="nextRound()">确认</a>
     </div>
   </div>
-
 
 </body>
 
